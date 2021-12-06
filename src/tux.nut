@@ -824,7 +824,7 @@
 		local swap = game.subitem
 
 		if(game.weapon == game.subitem) {
-			if(game.maxenergy < 4) {
+			if(game.maxenergy < 4 - game.difficulty) {
 				game.maxenergy++
 				game.subitem = 0
 				tftime = 0
@@ -881,7 +881,7 @@
 		stopMusic()
 		playSound(sndDie, 0)
 		mywep = game.weapon
-		if((game.lives == 0 || game.check == false) && game.difficulty == 0) game.weapon = 0
+		if(game.lives == 0 || game.check == false) game.weapon = 0
 	}
 
 	function run() {

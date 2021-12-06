@@ -56,7 +56,7 @@
 ::meMain <- [
 	{
 		name = function() { return gvLangObj["main-menu"]["new"] },
-		func = function() { cursor = 0; menu = meNewGame }
+		func = function() { cursor = 0; menu = meDifficulty }
 	},
 	{
 		name = function() { return gvLangObj["main-menu"]["load"] },
@@ -83,7 +83,7 @@
 	},
 	{
 		name = function() { return gvLangObj["pause-menu"]["restart"]},
-		func = function() { startPlay(gvMap.file) }
+		func = function() { gvIGT = 0; game.check = false; startPlay(gvMap.file) }
 	}
 	{
 		name = function() { return gvLangObj["pause-menu"]["quit-level"]},
@@ -132,19 +132,23 @@
 ::meDifficulty <- [
 	{
 		name = function() { return gvLangObj["difficulty-levels"]["easy"] },
-		func = function() { game.difficulty = 0; cursor = 0; menu = meOptions }
+		func = function() { game.difficulty = 0; cursor = 0; menu = meNewGame }
 	},
 	{
 		name = function() { return gvLangObj["difficulty-levels"]["normal"] },
-		func = function() { game.difficulty = 1; cursor = 0; menu = meOptions }
+		func = function() { game.difficulty = 1; cursor = 0; menu = meNewGame }
 	},
 	{
 		name = function() { return gvLangObj["difficulty-levels"]["hard"] },
-		func = function() { game.difficulty = 2; cursor = 0; menu = meOptions }
+		func = function() { game.difficulty = 2; cursor = 0; menu = meNewGame }
 	},
 	{
 		name = function() { return gvLangObj["difficulty-levels"]["super"] },
-		func = function() { game.difficulty = 3; cursor = 0; menu = meOptions }
+		func = function() { game.difficulty = 3; cursor = 0; menu = meNewGame }
+	},
+	{
+		name = function() { return "Cancel" },
+		func = function() { cursor = 0; menu = meMain }
 	}
 ]
 
@@ -219,3 +223,4 @@
 ]
 
 ::meLoadGame <- []
+//This menu is left empty intentionally; it will be created dynamically at runtime.
