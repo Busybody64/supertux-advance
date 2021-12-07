@@ -48,6 +48,8 @@
 ::sprCheckBell <- newSprite("res/gfx/bell.png", 16, 16, 0, 0, 8, 0)
 ::sprTNT <- newSprite("res/gfx/tnt.png", 16, 16, 0, 0, 0, 0)
 ::sprC4 <- newSprite("res/gfx/c4.png", 16, 16, 0, 0, 0, 0)
+::sprColorBlock <- newSprite("res/gfx/switchblocks.png", 16, 16, 0, 0, 0, 0)
+::sprColorSwitch <- newSprite("res/gfx/colorswitches.png", 32, 32, 0, 0, 16, 16)
 
 //NPCs
 ::sprRadGuin <- newSprite("res/gfx/radguin.png", 22, 32, 0, 0, 16, 32)
@@ -170,6 +172,7 @@
 ::musDeluge <- "res/snd/deluge.ogg"
 ::musSnowTown <- "res/snd/winter_wonderland.ogg"
 ::musAirship <- "res/snd/airship.ogg"
+::musPuzzle <- "res/snd/puzzle.ogg"
 
 //Saved separately so that it can be reused frequently
 ::musInvincible <- loadMusic("res/snd/invincible.ogg")
