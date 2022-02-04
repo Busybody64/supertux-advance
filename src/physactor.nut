@@ -65,6 +65,7 @@
 							if(hitTest(ns, gvMap.shape)) return false
 							break
 						case 2: //Half Up
+						case 52:
 							gvMap.shape.setPos(((cx + i) * 16) + 8, ((cy + j) * 16) + 4)
 							gvMap.shape.kind = 0
 							gvMap.shape.w = 8.0
@@ -86,6 +87,7 @@
 							if(hitTest(ns, gvMap.shape)) return false
 							break
 						case 5: //1/2 TL A
+						case 58:
 							gvMap.shape.setPos(((cx + i) * 16) + 8, ((cy + j) * 16) + 12)
 							gvMap.shape.kind = 2
 							gvMap.shape.w = 8.0
@@ -93,6 +95,7 @@
 							if(hitTest(ns, gvMap.shape)) return false
 							break
 						case 6: //1/2 TL B
+						case 59:
 							gvMap.shape.setPos(((cx + i) * 16) + 8, ((cy + j) * 16) + 4)
 							gvMap.shape.kind = 2
 							gvMap.shape.w = 8.0
@@ -100,6 +103,7 @@
 							if(hitTest(ns, gvMap.shape)) return false
 							break
 						case 7: //1/2 TR B
+						case 55:
 							gvMap.shape.setPos(((cx + i) * 16) + 8, ((cy + j) * 16) + 4)
 							gvMap.shape.kind = 1
 							gvMap.shape.w = 8.0
@@ -107,6 +111,7 @@
 							if(hitTest(ns, gvMap.shape)) return false
 							break
 						case 8: //1/2 TR A
+						case 56:
 							gvMap.shape.setPos(((cx + i) * 16) + 8, ((cy + j) * 16) + 12)
 							gvMap.shape.kind = 1
 							gvMap.shape.w = 8.0
@@ -114,6 +119,7 @@
 							if(hitTest(ns, gvMap.shape)) return false
 							break
 						case 9: //45 TL
+						case 54:
 							gvMap.shape.setPos(((cx + i) * 16) + 8, ((cy + j) * 16) + 8)
 							gvMap.shape.kind = 2
 							gvMap.shape.w = 8.0
@@ -149,6 +155,7 @@
 							if(hitTest(ns, gvMap.shape)) return false
 							break
 						case 14: //45 TR
+						case 53:
 							gvMap.shape.setPos(((cx + i) * 16) + 8, ((cy + j) * 16) + 8)
 							gvMap.shape.kind = 1
 							gvMap.shape.w = 8.0
@@ -254,6 +261,8 @@
 							if(hitTest(ns, gvMap.shape)) return false
 							break
 						case 38: //One Way
+						case 50:
+						case 51:
 							local nps = Rec(shape.x + shape.ox, ns.y, ns.w, ns.h, shape.kind)
 							gvMap.shape.setPos(((cx + i) * 16) + 8, ((cy + j) * 16) + 4)
 							gvMap.shape.kind = 0
@@ -396,26 +405,127 @@
 		local cy = floor(y / 16) + 1
 
 		//Check that the solid layer exists
-		local wl = null //Working layer
-		for(local i = 0; i < gvMap.data.layers.len(); i++) {
-			if(gvMap.data.layers[i].type == "tilelayer" && gvMap.data.layers[i].name == "solid") {
-				wl = gvMap.data.layers[i]
-				break
-			}
-		}
+		local wl = gvMap.solidLayer
 
 		//Check against places in solid layer
 		if(wl != null) {
 			local tile = cx + (cy * wl.width)
-			if(tile >= 0 && tile < wl.data.len()) if(wl.data[tile] - gvMap.solidfid == 38) {
-				gvMap.shape.setPos((cx * 16) + 8, (cy * 16) + 4)
-				gvMap.shape.kind = 0
-				gvMap.shape.w = 8.0
-				gvMap.shape.h = 4.0
-				if(hitTest(ns, gvMap.shape)) return true
+			if(tile >= 0 && tile < wl.data.len()) switch(wl.data[tile] - gvMap.solidfid) {
+				case 38:
+				case 50:
+				case 51:
+					gvMap.shape.setPos((cx * 16) + 8, (cy * 16) + 4)
+					gvMap.shape.kind = 0
+					gvMap.shape.w = 8.0
+					gvMap.shape.h = 4.0
+					if(hitTest(ns, gvMap.shape)) return true
+					break
+				case 44: //R diag
+					break
+				case 45: //L 2/2
+					break
+				case 46: //L 1/2
+					break
+				case 47: //R 1/2
+					break
+				case 48: //R 2/2
+					break
+				case 49: //L diag
+					break
 			}
 		}
 
 		return false
+	}
+
+	function onIce() {
+		//Save current location and move
+		local ns = Rec(x + shape.ox, y + shape.oy + 2, shape.w, shape.h, shape.kind)
+		local cx = floor(x / 16)
+		local cy = floor(y / 16) + 1
+
+		//Check that the solid layer exists
+		local wl = gvMap.solidLayer
+
+		//Check against places in solid layer
+		if(wl != null) {
+			local tile = cx + (cy * wl.width)
+			if(tile >= 0 && tile < wl.data.len()) switch(wl.data[tile] - gvMap.solidfid) {
+				case 39:
+				case 51:
+				case 52:
+				case 53:
+				case 54:
+				case 55:
+				case 56:
+				case 57:
+				case 58:
+				case 59:
+					gvMap.shape.setPos((cx * 16) + 8, (cy * 16) + 4)
+					gvMap.shape.kind = 0
+					gvMap.shape.w = 8.0
+					gvMap.shape.h = 4.0
+					if(hitTest(ns, gvMap.shape)) return true
+			}
+		}
+
+		return false
+	}
+}
+
+::PathCrawler <- class extends PhysAct {
+	path = null
+	speed = 0.0
+	tx = 0
+	ty = 0
+	loop = false
+	step = 0
+	reverse = false
+	dir = 0.0
+
+	constructor(_x, _y, _arr = null) {
+		base.constructor(_x, _y, _arr)
+		path = _arr[0]
+		speed = _arr[1].tofloat()
+		shape = Rec(x, y, 6, 6, 0)
+		if(path[0][0] == path[path.len() - 1][0] && path[0][1] == path[path.len() - 1][1]) loop = true
+		tx = path[0][0]
+		ty = path[0][1]
+		print(jsonWrite(path))
+	}
+
+	function run() {
+		//Follow path
+		if(distance2(x, y, tx, ty) > speed) {
+			dir = pointAngle(x, y, tx, ty)
+			x += lendirX(speed, dir)
+			y += lendirY(speed, dir)
+		}
+		else {
+			x = tx
+			y = ty
+			//Update target
+			if(reverse) {
+				if(step - 1 < 0) {
+					reverse = false
+					step++
+				}
+				else step--
+				if(step < 0) step = 0
+				tx = path[step][0]
+				ty = path[step][1]
+			}
+			else {
+				if(step + 1 < path.len()) step++
+				else if(loop) step = 0
+				else {
+					step--
+					reverse = true
+				}
+				if(step < 0) step = 0
+				tx = path[step][0]
+				ty = path[step][1]
+			}
+		}
 	}
 }

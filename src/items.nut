@@ -14,11 +14,31 @@
 
 	function run()
 	{
-		frame += 0.1
+		frame += 0.2
 		drawSprite(sprCoin, frame, x - camx, y - camy)
-		if(gvPlayer != 0) if(distance2(x, y, gvPlayer.x, gvPlayer.y + 2) <= 14) {
+		if(gvPlayer) if(distance2(x, y, gvPlayer.x, gvPlayer.y + 2) <= 16) {
 			deleteActor(id)
 			newActor(CoinEffect, x, y)
+		}
+	}
+
+	function _typeof() { return "Coin" }
+}
+
+::Berry <- class extends Actor{
+	constructor(_x, _y, _arr = null)
+	{
+		base.constructor(_x, _y)
+	}
+
+	function run()
+	{
+		drawSprite(sprBerry, 0, x - camx, y - camy + ((getFrames() / 16) % 2 == 0).tointeger())
+		if(gvPlayer) if(distance2(x, y, gvPlayer.x, gvPlayer.y + 2) <= 16) {
+			deleteActor(id)
+			game.berries++
+			stopSound(1)
+			playSoundChannel(sndGulp, 0, 1)
 		}
 	}
 
@@ -35,22 +55,18 @@
 	function run()
 	{
 		drawSprite(sprFlowerFire, getFrames() / 16, x - camx, y - camy)
-		if(gvPlayer != 0) if(distance2(x, y, gvPlayer.x, gvPlayer.y + 2) <= 14) {
+		if(gvPlayer) if(distance2(x, y, gvPlayer.x, gvPlayer.y + 2) <= 14) {
 			deleteActor(id)
 			if(game.weapon == 0) {
 				game.weapon = 1
-				game.maxenergy = 1
-			}
-			else if(game.weapon == 1) {
-				if(game.maxenergy < 4 - game.difficulty) game.maxenergy++
-				else game.subitem = 1
+				game.maxenergy = 4 - game.difficulty
 			}
 			else {
 				game.subitem = game.weapon
-				game.maxenergy = 1
+				game.maxenergy = 4 - game.difficulty
 				game.weapon = 1
 			}
-			playSound(sndHeal, 0)
+			playSoundChannel(sndHeal, 0, 1)
 			if(gvPlayer.rawin("tftime")) gvPlayer.tftime = 0
 		}
 	}
@@ -68,22 +84,18 @@
 	function run()
 	{
 		drawSprite(sprFlowerIce, getFrames() / 16, x - camx, y - camy)
-		if(gvPlayer != 0) if(distance2(x, y, gvPlayer.x, gvPlayer.y + 2) <= 14) {
+		if(gvPlayer) if(distance2(x, y, gvPlayer.x, gvPlayer.y + 2) <= 14) {
 			deleteActor(id)
 			if(game.weapon == 0) {
 				game.weapon = 2
-				game.maxenergy = 1
-			}
-			else if(game.weapon == 2) {
-				if(game.maxenergy < 4 - game.difficulty) game.maxenergy++
-				else game.subitem = 1
+				game.maxenergy = 4 - game.difficulty
 			}
 			else {
 				game.subitem = game.weapon
-				game.maxenergy = 1
+				game.maxenergy = 4 - game.difficulty
 				game.weapon = 2
 			}
-			playSound(sndHeal, 0)
+			playSoundChannel(sndHeal, 0, 1)
 			if(gvPlayer.rawin("tftime")) gvPlayer.tftime = 0
 		}
 	}
@@ -97,9 +109,9 @@
 
 	constructor(_x, _y, _arr = null) {
 		base.constructor(_x, _y)
-		shape = Rec(x, y, 4, 7, 0)
+		shape = Rec(x, y, 6, 7, 0)
 
-		if(gvPlayer != 0) {
+		if(gvPlayer) {
 			if(x < gvPlayer.x) flip = true
 		}
 
@@ -109,7 +121,7 @@
 	function run() {
 		if(placeFree(x, y + 1)) {
 			if(inWater(x, y)) vspeed += 0.01
-			else vspeed += 0.1
+			else vspeed += 0.2
 		}
 		if(placeFree(x, y + vspeed)) y += vspeed
 		else vspeed /= 2
@@ -117,25 +129,25 @@
 		if(y > gvMap.h + 8) deleteActor(id)
 
 		if(flip) {
-			if(placeFree(x - 0.5, y)) x -= 0.5
-			else if(placeFree(x - 1.1, y - 0.5)) {
-				x -= 0.5
-				y -= 0.25
-			} else if(placeFree(x - 1.1, y - 1.0)) {
-				x -= 0.5
-				y -= 0.5
+			if(placeFree(x - 1, y)) x -= 1.0
+			else if(placeFree(x - 2, y - 2)) {
+				x -= 1.0
+				y -= 1.0
+			} else if(placeFree(x - 1, y - 2)) {
+				x -= 1.0
+				y -= 1.0
 			} else flip = false
 
 			if(x <= 0) flip = false
 		}
 		else {
-			if(placeFree(x + 1, y)) x += 0.5
-			else if(placeFree(x + 1.1, y - 0.5)) {
-				x += 0.5
-				y -= 0.25
-			} else if(placeFree(x + 1.1, y - 1.0)) {
-				x += 0.5
-				y -= 0.5
+			if(placeFree(x + 1, y)) x += 1.0
+			else if(placeFree(x + 1, y - 1)) {
+				x += 1.0
+				y -= 1.0
+			} else if(placeFree(x + 2, y - 2)) {
+				x += 1.0
+				y -= 1.0
 			} else flip = true
 
 			if(x >= gvMap.w) flip = true
@@ -143,7 +155,7 @@
 
 		shape.setPos(x, y)
 
-		if(gvPlayer != 0) if(distance2(x, y, gvPlayer.x, gvPlayer.y) <= 14) {
+		if(gvPlayer) if(distance2(x, y, gvPlayer.x, gvPlayer.y) <= 14) {
 			if(game.health < game.maxHealth) {
 				game.health++
 				for(local i = 0; i < 4; i++) {
@@ -152,7 +164,7 @@
 			}
 			else if(game.subitem != 6 && (game.subitem == 0 || willwrite)) game.subitem = 5
 			deleteActor(id)
-			playSound(sndHeal, 0)
+			playSoundChannel(sndHeal, 0, 1)
 		}
 
 		drawSprite(sprMuffin, 0, x - camx, y - camy)
@@ -166,7 +178,7 @@
 		base.constructor(_x, _y)
 		shape = Rec(x, y, 4, 7, 0)
 
-		if(gvPlayer != 0) {
+		if(gvPlayer) {
 			if(x < gvPlayer.x) flip = true
 		}
 	}
@@ -174,7 +186,7 @@
 	function run() {
 		if(placeFree(x, y + 1)) {
 			if(inWater(x, y)) vspeed += 0.01
-			else vspeed += 0.1
+			else vspeed += 0.2
 		}
 		if(placeFree(x, y + vspeed)) y += vspeed
 		else vspeed /= 2
@@ -182,25 +194,25 @@
 		if(y > gvMap.h + 8) deleteActor(id)
 
 		if(flip) {
-			if(placeFree(x - 0.5, y)) x -= 0.5
-			else if(placeFree(x - 1.1, y - 0.5)) {
-				x -= 0.5
-				y -= 0.25
-			} else if(placeFree(x - 1.1, y - 1.0)) {
-				x -= 0.5
-				y -= 0.5
+			if(placeFree(x - 1, y)) x -= 1.0
+			else if(placeFree(x - 2, y - 2)) {
+				x -= 1.0
+				y -= 1.0
+			} else if(placeFree(x - 1, y - 2)) {
+				x -= 1.0
+				y -= 1.0
 			} else flip = false
 
 			if(x <= 0) flip = false
 		}
 		else {
-			if(placeFree(x + 1, y)) x += 0.5
-			else if(placeFree(x + 1.1, y - 0.5)) {
-				x += 0.5
-				y -= 0.25
-			} else if(placeFree(x + 1.1, y - 1.0)) {
-				x += 0.5
-				y -= 0.5
+			if(placeFree(x + 1, y)) x += 1.0
+			else if(placeFree(x + 1, y - 1)) {
+				x += 1.0
+				y -= 1.0
+			} else if(placeFree(x + 2, y - 2)) {
+				x += 1.0
+				y -= 1.0
 			} else flip = true
 
 			if(x >= gvMap.w) flip = true
@@ -208,7 +220,7 @@
 
 		shape.setPos(x, y)
 
-		if(gvPlayer != 0) if(distance2(x, y, gvPlayer.x, gvPlayer.y) <= 14) {
+		if(gvPlayer) if(distance2(x, y, gvPlayer.x, gvPlayer.y) <= 14) {
 			if(game.health < game.maxHealth - 3) {
 				game.health += 4
 				for(local i = 0; i < 4; i++) {
@@ -223,7 +235,7 @@
 			}
 			else game.subitem = 6
 			deleteActor(id)
-			playSound(sndHeal, 0)
+			playSoundChannel(sndHeal, 0, 1)
 		}
 
 		drawSprite(sprMuffin, 1, x - camx, y - camy)
@@ -237,38 +249,38 @@
 		base.constructor(_x, _y)
 		shape = Rec(x, y, 4, 7, 0)
 
-		if(gvPlayer != 0) {
+		if(gvPlayer) {
 			if(x > gvPlayer.x) flip = true
 		}
 	}
 
 	function run() {
-		if(placeFree(x, y + 1)) vspeed += 0.1
+		if(placeFree(x, y + 1)) vspeed += 0.2
 		if(placeFree(x, y + vspeed)) y += vspeed
 		else vspeed /= 2
 
 		if(y > gvMap.h + 8) deleteActor(id)
 
 		if(flip) {
-			if(placeFree(x - 0.5, y)) x -= 0.5
-			else if(placeFree(x - 1.1, y - 0.5)) {
-				x -= 0.5
-				y -= 0.25
-			} else if(placeFree(x - 1.1, y - 1.0)) {
-				x -= 0.5
-				y -= 0.5
+			if(placeFree(x - 1, y)) x -= 1.0
+			else if(placeFree(x - 2, y - 2)) {
+				x -= 1.0
+				y -= 1.0
+			} else if(placeFree(x - 1, y - 2)) {
+				x -= 1.0
+				y -= 1.0
 			} else flip = false
 
 			if(x <= 0) flip = false
 		}
 		else {
-			if(placeFree(x + 1, y)) x += 0.5
-			else if(placeFree(x + 1.1, y - 0.5)) {
-				x += 0.5
-				y -= 0.25
-			} else if(placeFree(x + 1.1, y - 1.0)) {
-				x += 0.5
-				y -= 0.5
+			if(placeFree(x + 1, y)) x += 1.0
+			else if(placeFree(x + 1, y - 1)) {
+				x += 1.0
+				y -= 1.0
+			} else if(placeFree(x + 2, y - 2)) {
+				x += 1.0
+				y -= 1.0
 			} else flip = true
 
 			if(x >= gvMap.w) flip = true
@@ -276,7 +288,7 @@
 
 		shape.setPos(x, y)
 
-		if(gvPlayer != 0) if(distance2(x, y, gvPlayer.x, gvPlayer.y) <= 14) {
+		if(gvPlayer) if(distance2(x, y, gvPlayer.x, gvPlayer.y) <= 14) {
 			if(gvPlayer.blinking > 0) return
 			if(gvPlayer.x < x) gvPlayer.hspeed = -1.0
 			else gvPlayer.hspeed = 1.0
@@ -290,30 +302,30 @@
 
 ::Starnyan <- class extends PhysAct {
 	hspeed = 0
-	vspeed = -2
+	vspeed = -4
 
 	constructor(_x, _y, _arr = null) {
 		base.constructor(_x, _y)
 
-		if(gvPlayer != 0) if(gvPlayer.x > x) hspeed = -1
+		if(gvPlayer) if(gvPlayer.x > x) hspeed = -1
 		else hspeed = 1
 
 		shape = Rec(x, y, 6, 6, 0)
 	}
 
 	function run() {
-		if(!placeFree(x, y + 1)) vspeed = -3
-		if(!placeFree(x + 1, y)) hspeed = -1
-		if(!placeFree(x - 1, y)) hspeed = 1
-		vspeed += 0.1
+		if(!placeFree(x, y + 1)) vspeed = -5
+		if(!placeFree(x + 1, y)) hspeed = -2
+		if(!placeFree(x - 1, y)) hspeed = 2
+		vspeed += 0.25
 
 		if(placeFree(x + hspeed, y)) x += hspeed
 		if(placeFree(x, y + vspeed)) y += vspeed
 		else vspeed /= 2
 		shape.setPos(x, y)
 
-		if(gvPlayer != 0) if(distance2(x, y, gvPlayer.x, gvPlayer.y) <= 16) {
-			gvPlayer.invincible = 60 * 25
+		if(gvPlayer) if(distance2(x, y, gvPlayer.x, gvPlayer.y) <= 16) {
+			gvPlayer.invincible = 645
 			deleteActor(id)
 			playMusic(musInvincible, -1)
 			gvLastSong = ""
@@ -331,7 +343,7 @@
 	constructor(_x, _y, _arr = null) {
 		base.constructor(_x, _y)
 
-		if(gvPlayer != 0) if(x > gvPlayer.x) frame = 3.5
+		if(gvPlayer) if(x > gvPlayer.x) frame = 3.5
 		shape = Rec(x, y, 6, 6, 0)
 	}
 
@@ -352,8 +364,8 @@
 
 		drawSprite(sprAirFeather, frame, x - camx, y - camy)
 
-		if(gvPlayer != 0) if(hitTest(shape, gvPlayer.shape)){
-			playSound(sndHeal, 0)
+		if(gvPlayer) if(hitTest(shape, gvPlayer.shape)){
+			playSoundChannel(sndHeal, 0, 1)
 			if(game.weapon == 0) game.weapon = 3
 			else {
 				game.subitem = game.weapon
@@ -368,7 +380,7 @@
 
 ::FlyRefresh <- class extends Actor{
 	function run() {
-		if(gvPlayer != 0) if(distance2(gvPlayer.x, gvPlayer.y, x, y) <= 16) if(gvPlayer.rawin("energy") && game.weapon == 3) gvPlayer.energy = 4
+		if(gvPlayer) if(distance2(gvPlayer.x, gvPlayer.y, x, y) <= 16) if(gvPlayer.rawin("energy") && game.weapon == 3) gvPlayer.energy = 4
 
 		drawSpriteEx(sprTinyWind, getFrames() / 8, x - camx, y - camy - 8, 0, 2, 1, 1, 0.25)
 		drawSpriteEx(sprTinyWind, getFrames() / 8, x - camx, y - camy + 8, 0, 0, 1, 1, 0.25)
@@ -383,7 +395,7 @@
 	constructor(_x, _y, _arr = null) {
 		base.constructor(_x, _y)
 
-		if(gvPlayer != 0) if(gvPlayer.x > x) hspeed = -1
+		if(gvPlayer) if(gvPlayer.x > x) hspeed = -1
 		else hspeed = 1
 
 		shape = Rec(x, y, 6, 6, 0)
@@ -400,12 +412,102 @@
 		else vspeed /= 2
 		shape.setPos(x, y)
 
-		if(gvPlayer != 0) if(distance2(x, y, gvPlayer.x, gvPlayer.y) <= 16) {
+		if(gvPlayer) if(distance2(x, y, gvPlayer.x, gvPlayer.y) <= 16) {
 			game.lives++
 			playSound(snd1up, 0)
 			deleteActor(id)
 		}
 
-		drawSprite(game.characters[game.playerchar][1], game.weapon, x - camx, y + 8 - camy)
+		drawSprite(getroottable()[game.characters[game.playerchar][1]], game.weapon, x - camx, y + 8 - camy)
 	}
+}
+
+::MuffinBomb <- class extends PhysAct {
+	flip = false
+
+	constructor(_x, _y, _arr = null) {
+		base.constructor(_x, _y)
+		shape = Rec(x, y, 4, 7, 0)
+
+		if(gvPlayer) {
+			if(x > gvPlayer.x) flip = true
+		}
+	}
+
+	function run() {
+		if(placeFree(x, y + 1)) {
+			if(inWater(x, y)) vspeed += 0.01
+			else vspeed += 0.2
+		}
+		if(placeFree(x, y + vspeed)) y += vspeed
+		else vspeed /= 2
+
+		if(y > gvMap.h + 8) deleteActor(id)
+
+		if(flip) {
+			if(placeFree(x - 1, y)) x -= 1.0
+			else if(placeFree(x - 2, y - 2)) {
+				x -= 1.0
+				y -= 1.0
+			} else if(placeFree(x - 1, y - 2)) {
+				x -= 1.0
+				y -= 1.0
+			} else flip = false
+
+			if(x <= 0) flip = false
+		}
+		else {
+			if(placeFree(x + 1, y)) x += 1.0
+			else if(placeFree(x + 1, y - 1)) {
+				x += 1.0
+				y -= 1.0
+			} else if(placeFree(x + 2, y - 2)) {
+				x += 1.0
+				y -= 1.0
+			} else flip = true
+
+			if(x >= gvMap.w) flip = true
+		}
+
+		shape.setPos(x, y)
+
+		if(gvPlayer) if(distance2(x, y, gvPlayer.x, gvPlayer.y) <= 14) {
+			if(gvPlayer.blinking > 0) return
+			if(gvPlayer.x < x) gvPlayer.hspeed = -1.0
+			else gvPlayer.hspeed = 1.0
+			newActor(BadExplode, x, y)
+			deleteActor(id)
+		}
+
+		drawSprite(sprMuffin, 3, x - camx, y - camy)
+	}
+}
+
+::EarthShell <- class extends Actor{
+
+	constructor(_x, _y, _arr = null)
+	{
+		base.constructor(_x, _y)
+	}
+
+	function run()
+	{
+		drawSprite(sprEarthShell, getFrames() / 16, x - camx, y - camy)
+		if(gvPlayer) if(distance2(x, y, gvPlayer.x, gvPlayer.y + 2) <= 14) {
+			deleteActor(id)
+			if(game.weapon == 0) {
+				game.weapon = 4
+				game.maxenergy = 4 - game.difficulty
+			}
+			else {
+				game.subitem = game.weapon
+				game.maxenergy = 4 - game.difficulty
+				game.weapon = 4
+			}
+			playSoundChannel(sndHeal, 0, 1)
+			if(gvPlayer.rawin("tftime")) gvPlayer.tftime = 0
+		}
+	}
+
+	function _typeof() { return "EarthShell" }
 }

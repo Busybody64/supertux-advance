@@ -21,7 +21,7 @@
 		}
 
 		shape = Rec(x, y, 1, 1, 0)
-		if(gvPlayer == 0) gvPlayer = this
+		if(!gvPlayer) gvPlayer = this
 	}
 
 	function run() {
@@ -135,21 +135,21 @@
 				switch(nextdir) {
 					case 0:
 						vspeed = 0
-						hspeed = 1
+						hspeed = 2
 						game.owd = 2
 						break
 					case 1:
-						vspeed = -1
+						vspeed = -2
 						hspeed = 0
 						game.owd = 3
 						break
 					case 2:
 						vspeed = 0
-						hspeed = -1
+						hspeed = -2
 						game.owd = 0
 						break
 					case 3:
-						vspeed = 1
+						vspeed = 2
 						hspeed = 0
 						game.owd = 1
 						break
@@ -164,45 +164,45 @@
 			//Move right
 			if(getcon("right", "hold") && (!placeFree(x + 16, y) || debug) && hspeed == 0 && vspeed == 0) {
 				if(level == "" || game.owd == 0) {
-					hspeed = 1
+					hspeed = 2
 					game.owd = 2
 				}
-				else if(game.completed.rawin(level)) hspeed = 1
+				else if(game.completed.rawin(level)) hspeed = 2
 			}
 
 			//Move up
 			if(getcon("up", "hold") && (!placeFree(x, y - 16) || debug) && hspeed == 0 && vspeed == 0) {
 				if(level == "" || game.owd == 1) {
-					vspeed = -1
+					vspeed = -2
 					game.owd = 3
 				}
-				else if(game.completed.rawin(level)) vspeed = -1
+				else if(game.completed.rawin(level)) vspeed = -2
 			}
 
 			//Move left
 			if(getcon("left", "hold") && (!placeFree(x - 16, y) || debug) && hspeed == 0 && vspeed == 0) {
 				if(level == "" || game.owd == 2) {
-					hspeed = -1
+					hspeed = -2
 					game.owd = 0
 				}
-				else if(game.completed.rawin(level)) hspeed = -1
+				else if(game.completed.rawin(level)) hspeed = -2
 			}
 
 			//Move down
 			if(getcon("down", "hold") && (!placeFree(x, y + 16) || debug) && hspeed == 0 && vspeed == 0) {
 				if(level == "" || game.owd == 3) {
-					vspeed = 1
+					vspeed = 2
 					game.owd = 1
 				}
-				else if(game.completed.rawin(level)) vspeed = 1
+				else if(game.completed.rawin(level)) vspeed = 2
 			}
 		}
 
 		x += hspeed
 		y += vspeed
 
-		if(hspeed == 0 && vspeed == 0) drawSprite(game.characters[game.playerchar][0], 0, x - camx, y - camy)
-		else drawSprite(game.characters[game.playerchar][0], getFrames() / 8, x - camx, y - camy)
+		if(hspeed == 0 && vspeed == 0) drawSprite(getroottable()[game.characters[game.playerchar][0]], 0, x - camx, y - camy)
+		else drawSprite(getroottable()[game.characters[game.playerchar][0]], getFrames() / 8, x - camx, y - camy)
 
 		if(level != "") {
 			drawText(font2, (screenW() / 2) - (gvLangObj["level"][level].len() * 4), 8, gvLangObj["level"][level])
@@ -239,10 +239,11 @@
 
 		//Selected
 		if(getcon("jump", "press") || getcon("accept", "press") || getcon("shoot", "press")) {
-			if(gvPlayer != 0) if(hitTest(shape, gvPlayer.shape) && gvPlayer.hspeed == 0 && gvPlayer.vspeed == 0) if(level != "") {
+			if(gvPlayer) if(hitTest(shape, gvPlayer.shape) && gvPlayer.hspeed == 0 && gvPlayer.vspeed == 0) if(level != "") {
 				game.check = false
 				gvDoIGT = true
-				startPlay("res/map/" + level + ".json")
+				drawWeather = 0
+				startPlay(game.path + level + ".json")
 			}
 		}
 	}
@@ -263,10 +264,11 @@
 	function run() {
 		//Selected
 		if(getcon("jump", "press") || getcon("accept", "press") || getcon("shoot", "press")) {
-			if(gvPlayer != 0) if(hitTest(shape, gvPlayer.shape) && gvPlayer.hspeed == 0 && gvPlayer.vspeed == 0) if(level != "") {
+			if(gvPlayer) if(hitTest(shape, gvPlayer.shape) && gvPlayer.hspeed == 0 && gvPlayer.vspeed == 0) if(level != "") {
 				game.check = false
 				gvDoIGT = false
-				startPlay("res/map/" + level + ".json")
+				drawWeather = 0
+				startPlay(game.path + level + ".json")
 			}
 		}
 
@@ -299,7 +301,7 @@
 
 		//Selected
 		if(getcon("jump", "press") || getcon("accept", "press") || getcon("shoot", "press")) {
-			if(gvPlayer != 0) if(hitTest(shape, gvPlayer.shape) && gvPlayer.hspeed == 0 && gvPlayer.vspeed == 0) if(world != "") {
+			if(gvPlayer) if(hitTest(shape, gvPlayer.shape) && gvPlayer.hspeed == 0 && gvPlayer.vspeed == 0) if(world != "") {
 				game.owx = px
 				game.owy = py
 				startOverworld("res/map/" + world + ".json")
@@ -312,7 +314,7 @@
 
 ::startOverworld <- function(world) {
 	//Clear actors and start creating new ones
-	gvPlayer = 0
+	gvPlayer = false
 	actor.clear()
 	gvIGT = 0
 	autocon = {
@@ -372,7 +374,7 @@
 		{
 			case 0:
 				//newActor(Tux, i.x, i.y - 16)
-				if(gvPlayer == 0) newActor(OverPlayer, i.x + 8, i.y - 8)
+				if(!gvPlayer) newActor(OverPlayer, i.x + 8, i.y - 8)
 				break
 
 			case 1:
@@ -395,7 +397,7 @@
 
 	gvGameMode = gmOverworld
 
-	if(gvPlayer != 0) {
+	if(gvPlayer) {
 		camx = gvPlayer.x - (screenW() / 2)
 		camy = gvPlayer.y - (screenH() / 2)
 	}
@@ -431,17 +433,17 @@
 	if(actor.rawin("StageIcon")) foreach(i in actor["StageIcon"]) i.run()
 	if(actor.rawin("WorldIcon")) foreach(i in actor["WorldIcon"]) i.run()
 	if(actor.rawin("TownIcon")) foreach(i in actor["TownIcon"]) i.run()
-	if(gvPlayer != 0) gvPlayer.run()
+	if(gvPlayer) gvPlayer.run()
 
 	drawSprite(sprCoin, 0, 16, screenH() - 16)
 	drawText(font2, 24, screenH() - 23, game.coins.tostring())
-	drawSprite(game.characters[game.playerchar][1], game.weapon, screenW() - 16, screenH() - 12)
+	drawSprite(getroottable()[game.characters[game.playerchar][1]], game.weapon, screenW() - 16, screenH() - 12)
 	drawText(font2, screenW() - 26 - (game.lives.tostring().len() * 8), screenH() - 23, game.lives.tostring())
 
 	drawDebug()
 
 	game.igt++
-	if(config.showigt) {
+	if(config.showglobaligt) {
 		local gtd = formatTime(game.igt) //Game time to draw
 		drawText(font2, (screenW() / 2) - (gtd.len() * 4), screenH() - 24, gtd)
 	}
@@ -456,7 +458,7 @@
 	local ux = gvMap.w - screenW()
 	local uy = gvMap.h - screenH()
 
-	if(gvPlayer != 0)
+	if(gvPlayer)
 	{
 		px = (gvPlayer.x + gvPlayer.hspeed * 24) - (screenW() / 2)
 		py = (gvPlayer.y + gvPlayer.vspeed * 16) - (screenH() / 2)

@@ -5,7 +5,7 @@
 ::Tux <- class extends PhysAct {
 	canJump = 16
 	didJump = false //Checks if up speed can be slowed by letting go of jump
-	friction = 0.05
+	friction = 0.1
 	gravity = 0.0
 	frame = 0.0
 	flip = 0
@@ -28,26 +28,30 @@
 	energy = 0.0
 	hidden = false
 	jumpBuffer = 0
+	rspeed = 0.0 //Run animation speed
+	slideframe = 0.0 //Because using just frame gets screwy for some reason
+	wasInWater = false
 
 	//Animations
 	anim = [] //Animation frame delimiters: [start, end, speed]
-	anStand = [0.0, 3.0]
-	anWalk = [8.0, 15.0]
-	anRun = [16.0, 23.0]
-	anDive = [24.0, 25.0]
-	anSlide = [26.0, 29.0]
-	anHurt = [30.0, 31.0]
-	anJumpU = [32.0, 33.0]
-	anJumpT = [34.0, 35.0]
-	anFall = [36.0, 37.0]
-	anClimb = [44.0, 47.0]
-	anWall = [48.0, 49.0]
-	anSwimF = [52.0, 55.0]
-	anSwimUF = [56.0, 59.0]
-	anSwimDF = [60.0, 63.0]
-	anSwimU = [64.0, 67.0]
-	anSwimD = [68.0, 71.0]
-	anSkid = [4.0, 5.0]
+	anStand = [0.0, 3.0, "stand"]
+	anWalk = [8.0, 15.0, "walk"]
+	anRun = [16.0, 23.0, "run"]
+	anDive = [24.0, 25.0, "dive"]
+	anSlide = [26.0, 29.0, "slide"]
+	anHurt = [30.0, 31.0, "hurt"]
+	anJumpU = [32.0, 33.0, "jumpU"]
+	anJumpT = [34.0, 35.0, "jumpT"]
+	anFall = [36.0, 37.0, "fall"]
+	anClimb = [44.0, 47.0, "climb"]
+	anWall = [48.0, 49.0, "wall"]
+	anSwimF = [52.0, 55.0, "swim"]
+	anSwimUF = [56.0, 59.0, "swim"]
+	anSwimDF = [60.0, 63.0, "swim"]
+	anSwimU = [64.0, 67.0, "swim"]
+	anSwimD = [68.0, 71.0, "swim"]
+	anSkid = [4.0, 5.0, "skid"]
+	anPush = [6.0, 7.0, "push"]
 
 	constructor(_x, _y, _arr = null) {
 		base.constructor(_x, _y)
@@ -55,9 +59,10 @@
 		shapeStand = Rec(x, y, 5, 12, 0, 0, 0)
 		shapeSlide = Rec(x, y, 5, 6, 0, 0, 6)
 		shape = shapeStand
-		if(gvPlayer == 0) gvPlayer = this
+		if(!gvPlayer) gvPlayer = this
 		startx = _x.tofloat()
 		starty = _y.tofloat()
+		energy = game.maxenergy
 	}
 
 	function run() {
@@ -70,6 +75,7 @@
 		local freeLeft = placeFree(x - 1, y)
 		local freeRight = placeFree(x + 1, y)
 		local freeUp = placeFree(x, y - 1)
+		local nowInWater = inWater(x, y)
 		//Checks are done at the beginning and stored here so that they can be
 		//quickly reused. Location checks will likely need to be done multiple
 		//times per frame.
@@ -92,7 +98,7 @@
 		/////////////
 		// ON LAND //
 		/////////////
-		if(!inWater(x, y)) {
+		if(!inWater(x, y) || game.weapon == 4) {
 			swimming = false
 			shapeStand.h = 12.0
 
@@ -102,9 +108,9 @@
 					if(game.weapon == 2 && floor(frame) == 0) frame += 0.01
 					else if(game.weapon == 2 || game.weapon == 1) frame += 0.1
 					else if(game.weapon == 3) frame += 0.05
-					else frame += 0.03
+					else frame += 0.05
 
-					if(hspeed != 0) {
+					if(abs(rspeed) > 0.1) {
 						anim = anWalk
 						frame = anim[0]
 					}
@@ -117,9 +123,9 @@
 					break
 
 				case anWalk:
-					frame += abs(hspeed) / 8
-					if(hspeed == 0) anim = anStand
-					if(abs(hspeed) > 1.4) anim = anRun
+					frame += abs(rspeed) / 8
+					if(abs(rspeed) <= 0.1 || abs(hspeed) <= 0.1) anim = anStand
+					if(abs(rspeed) > 2.4) anim = anRun
 
 					if(placeFree(x, y + 2)) {
 						if(vspeed >= 0) anim = anFall
@@ -131,18 +137,19 @@
 				case anRun:
 				case anSkid:
 					if(flip == 0 && hspeed < 0) {
-						hspeed += 0.01
+						hspeed += 0.05
 						anim = anSkid
 					}
 					else if(flip == 1 && hspeed > 0) {
-						hspeed -= 0.01
+						hspeed -= 0.05
 						anim = anSkid
 					}
 					else anim = anRun
 
-					if(game.weapon == 2) frame+= abs(hspeed) / 16
-					else frame += abs(hspeed) / 8
-					if(abs(hspeed) < 1.2) anim = anWalk
+					if(anim == anSkid) frame += 0.2
+					else if(game.weapon == 2) frame += abs(rspeed) / 16
+					else frame += abs(rspeed) / 8
+					if(abs(rspeed) < 2 && anim != anSkid) anim = anWalk
 
 					if(placeFree(x, y + 2)) {
 						if(vspeed >= 0) anim = anFall
@@ -150,6 +157,9 @@
 						frame = anim[0]
 					}
 
+					break
+
+				case anPush:
 					break
 
 				case anJumpU:
@@ -188,13 +198,13 @@
 					break
 
 				case anWall:
-					frame += 0.15
+					frame += 0.3
 					vspeed = 0
 
 					if(floor(frame) > anim[1]) {
-						vspeed = -3.2
-						if(flip == 0) hspeed = 2
-						else hspeed = -2
+						vspeed = -5.0
+						if(flip == 0) hspeed = 3.0
+						else hspeed = -3.0
 						anim = anJumpU
 						frame = anim[0]
 					}
@@ -205,13 +215,15 @@
 
 					if(floor(frame) > anim[1]) {
 						anim = anSlide
-						frame = anim[0]
 						shape = shapeSlide
 					}
 					break
 
 				case anSlide:
-					frame = getFrames() / 12
+					if(game.weapon == 4) slideframe += abs(hspeed / 8.0)
+					else slideframe += abs(hspeed / 24.0)
+					frame = slideframe
+
 					if(!freeDown && hspeed != 0) if(floor(getFrames() % 8 - abs(hspeed)) == 0 || abs(hspeed) > 8) {
 						if(game.weapon == 1) newActor(FlameTiny, x - (8 * (hspeed / abs(hspeed))), y + 10)
 						if(game.weapon == 2) newActor(Glimmer, x - (12 * (hspeed / abs(hspeed))), y + 10)
@@ -237,7 +249,7 @@
 					else anim = anJumpU
 					frame = anim[0]
 					vspeed -= 1
-					if(getcon("jump", "hold") && vspeed > -4) vspeed = -4
+					if(getcon("jump", "hold") && vspeed > -4) vspeed = -6
 					break
 
 				case anSwimDF:
@@ -247,28 +259,19 @@
 					break
 			}
 
-			if(anim != anClimb) frame = wrap(frame, anim[0], anim[1])
+			if(anim != anClimb) frame = wrap(abs(frame), anim[0], anim[1])
 
 			//Sliding acceleration
-			if(anim == anDive || anim == anSlide) {
-				if(!placeFree(x, y + 2) && (abs(hspeed) < 4 || (abs(hspeed) < 6 && game.weapon == 2))) {
-					if(placeFree(x + 4, y + 2)) hspeed += 0.1
-					if(placeFree(x - 4, y + 2)) hspeed -= 0.1
-
-					if(placeFree(x + 4, y + 4)) {
-						hspeed += 0.1
-						vspeed += 0.5
-						if(!placeFree(x - 2, y + 2) && hspeed < 0) hspeed += 0.02
-					}
-
-					if(placeFree(x - 4, y + 4)) {
-						hspeed -= 0.1
-						vspeed += 0.5
-						if(!placeFree(x + 2, y + 2) && hspeed > 0) hspeed -= 0.02
-					}
+			if(anim == anDive || anim == anSlide || onIce()) {
+				if(!placeFree(x, y + 4) && (abs(hspeed) < 8 || (abs(hspeed) < 12 && game.weapon == 2))) {
+					if(placeFree(x + 4, y + 2)) hspeed += 0.25
+					if(placeFree(x - 4, y + 2)) hspeed -= 0.25
+					if(freeDown2)vspeed += 1.0
+					//if(!placeFree(x + hspeed, y) && placeFree(x + hspeed, y - abs(hspeed / 2)) && anim == anSlide) vspeed -= 0.25
 				}
+				else if(!placeFree(x, y + 8) && (abs(hspeed) < 8 || (abs(hspeed) < 12 && vspeed > 0))) vspeed += 0.2
 
-				if((!getcon("down", "hold") && !freeDown) || abs(hspeed) < 0.01) anim = anWalk
+				if(((!getcon("down", "hold") || abs(hspeed) < 0.05) && !freeDown && game.weapon != 4) || (abs(hspeed) < 0.05 && (game.weapon == 4 && !getcon("shoot", "hold"))) || (game.weapon == 4 && !getcon("shoot", "hold") && !getcon("down", "hold"))) if(anim == anSlide || anim == anDive) anim = anWalk
 			}
 
 			if(anim != anClimb && anim != anWall) {
@@ -279,37 +282,58 @@
 			//Controls
 			if(!freeDown2 || anim == anClimb) {
 				canJump = 16
-				if(game.weapon == 3 && energy < 4) energy += 0.1
+				if(game.weapon == 3 && energy < 4) energy += 0.2
 			}
 			else {
 				if(canJump > 0) canJump--
-				if(game.weapon == 3 && energy < 1) energy += 0.01
+				if(game.weapon == 3 && energy < 1) energy += 0.02
 			}
 			if(canMove) {
-				if(getcon("run", "hold") || abs(joyX(0)) >= js_max * 0.9) {
-					if(game.weapon == 2) mspeed = 2.0
-					else mspeed = 1.75
+				if(getcon("run", "hold") || (abs(joyX(0)) >= js_max * 0.9 || abs(joyY(0)) >= js_max * 0.9)) {
+					if(game.weapon == 2) mspeed = 3.5
+					else mspeed = 3.0
 				}
-				else if(getcon("sneak", "hold") || (abs(joyX(0)) <= js_max * 0.4 && abs(joyX(0)) > js_max * 0.1)) mspeed = 0.5
-				else mspeed = 1
+				else if(getcon("sneak", "hold") || (abs(joyX(0)) <= js_max * 0.4 && abs(joyX(0)) > js_max * 0.1) || (abs(joyY(0)) <= js_max * 0.4 && abs(joyY(0)) > js_max * 0.1)) mspeed = 1.0
+				else mspeed = 2.0
+				if(nowInWater) mspeed *= 0.8
 
 				//Moving left and right
-				if(getcon("right", "hold") && hspeed < mspeed && anim != anWall && anim != anSlide && anim != anHurt && anim != anClimb && anim != anSkid) hspeed += 0.1
-				if(getcon("left", "hold") && hspeed > -mspeed && anim != anWall && anim != anSlide && anim != anHurt && anim != anClimb && anim != anSkid) hspeed -= 0.1
+				if(getcon("right", "hold") && hspeed < mspeed && anim != anWall && anim != anSlide && anim != anHurt && anim != anClimb && anim != anSkid) {
+					if(onIce()) hspeed += 0.1
+					else hspeed += 0.2
+				}
+				if(getcon("left", "hold") && hspeed > -mspeed && anim != anWall && anim != anSlide && anim != anHurt && anim != anClimb && anim != anSkid) {
+					if(onIce()) hspeed -= 0.1
+					else hspeed -= 0.2
+				}
+
+				//Change run animation speed
+				if(getcon("right", "hold") && rspeed < mspeed && anim != anWall && anim != anSlide && anim != anHurt && anim != anClimb && anim != anSkid) if(freeRight || placeFree(x + 1, y - 2)) {
+					rspeed += 0.2
+					if(rspeed < hspeed) rspeed = hspeed
+				}
+				if(getcon("left", "hold") && rspeed > -mspeed && anim != anWall && anim != anSlide && anim != anHurt && anim != anClimb && anim != anSkid) if(freeLeft || placeFree(x - 1, y - 2)) {
+					rspeed -= 0.2
+					if(rspeed > hspeed) rspeed = hspeed
+				}
+				if(rspeed > 0) rspeed -= 0.1
+				if(rspeed < 0) rspeed += 0.1
+				if((abs(rspeed) <= 0.5 || hspeed == 0) && !getcon("right", "hold") && !getcon("left", "hold")) rspeed = 0.0
+				if(anim == anSlide) rspeed = hspeed
 
 				//On a ladder
 				if(anim == anClimb) {
 					vspeed = 0
 
 					//Ladder controls
-					if(getcon("up", "hold")) if(placeFree(x, y - 1)) {
+					if(getcon("up", "hold")) if(placeFree(x, y - 2)) {
 						frame -= climbdir / 8
-						y--
+						y -= 2
 					}
 
-					if(getcon("down", "hold")) if(placeFree(x, y + 1)) {
+					if(getcon("down", "hold")) if(placeFree(x, y + 2)) {
 						frame += climbdir / 8
-						y++
+						y += 2
 					}
 
 					//Check if still on ladder
@@ -318,6 +342,7 @@
 					if(felloff) {
 						anim = anFall
 						frame = anim[0]
+						if(getcon("up", "hold")) vspeed = -2.5
 					}
 
 					//Change direction
@@ -351,123 +376,132 @@
 					}
 					else if(canJump > 0) {
 						jumpBuffer = 0
-						if(game.weapon == 3) vspeed = -3
-						else vspeed = -3.8
+						if(anim == anClimb) vspeed = -3
+						else if(game.weapon == 3 || nowInWater) vspeed = -5.0
+						else vspeed = -5.8
 						didJump = true
 						if(game.weapon != 3) canJump = 0
-						if(anim != anHurt && anim != anDive) {
+						if(anim != anHurt && anim != anDive && (game.weapon != 4 || anim != anSlide)) {
 							anim = anJumpU
 							frame = anim[0]
 						}
-						if(game.weapon != 3) playSound(sndJump, 0)
-						else playSound(sndFlap, 0)
+						if(game.weapon != 3) playSoundChannel(sndJump, 0, 0)
+						else playSoundChannel(sndFlap, 0, 0)
 					}
-					else if(freeDown && anim != anClimb && !placeFree(x - 2, y) && anim != anWall && hspeed <= 0) {
+					else if(freeDown && anim != anClimb && !placeFree(x - 2, y) && anim != anWall && hspeed <= 0 && tileGetSolid(x - 8, y) != 40) {
 						flip = 0
 						anim = anWall
 						frame = anim[0]
+						playSound(sndWallkick, 0)
 					}
-					else if(freeDown && anim != anClimb && !placeFree(x + 2, y) && anim != anWall && hspeed >= 0) {
+					else if(freeDown && anim != anClimb && !placeFree(x + 2, y) && anim != anWall && hspeed >= 0 && tileGetSolid(x + 8, y) != 40) {
 						flip = 1
 						anim = anWall
 						frame = anim[0]
+						playSound(sndWallkick, 0)
 					}
 					else if(floor(energy) > 0 && game.weapon == 3 && getcon("jump", "press")) {
 						if(vspeed > 0) vspeed = 0.0
-						if(vspeed > -4) vspeed -= 1.8
+						if(vspeed > -4) vspeed -= 3.0
 						didJump = true
 						if(game.weapon != 3) canJump = 0
 						if(anim != anHurt && anim != anDive) {
 							anim = anJumpU
 							frame = anim[0]
 						}
-						if(game.weapon != 3) playSound(sndJump, 0)
-						else playSound(sndFlap, 0)
+						if(game.weapon != 3) playSoundChannel(sndJump, 0, 0)
+						else playSoundChannel(sndFlap, 0, 0)
 						energy--
 					}
 				}
-				if(getcon("jump", "press") && jumpBuffer <= 0 && freeDown) jumpBuffer = 12
+				if(getcon("jump", "press") && jumpBuffer <= 0 && freeDown) jumpBuffer = 8
 				if(jumpBuffer > 0) jumpBuffer--
 
 				if(getcon("jump", "release") && vspeed < 0 && didJump)
 				{
 					didJump = false
-					vspeed /= 2
+					vspeed /= 2.5
 				}
 
 				//Going into slide
-				if(!freeDown2 && getcon("down", "hold") && anim != anDive && anim != anSlide && anim != anJumpU && anim != anJumpT && anim != anFall && anim != anHurt) {
+				if(((!freeDown2 && getcon("down", "hold")) || (getcon("shoot", "hold") && game.weapon == 4)) && anim != anDive && anim != anSlide && anim != anJumpU && anim != anJumpT && anim != anFall && anim != anHurt && anim != anWall) {
 					if(placeFree(x + 2, y + 1) || hspeed >= 1.5) {
 						anim = anDive
 						frame = anim[0]
 						flip = 0
-						playSound(sndSlide, 0)
+						playSoundChannel(sndSlide, 0, 0)
 					}
 
 					if(placeFree(x - 2, y + 1) || hspeed <= -1.5) {
 						anim = anDive
 						frame = anim[0]
 						flip = 1
-						playSound(sndSlide, 0)
+						playSoundChannel(sndSlide, 0, 0)
 					}
 				}
 			} else {
-				if(hspeed < 0.75 && endmode) hspeed += 0.1
+				if(hspeed < 1 && endmode) hspeed += 0.2
+				if(endmode && placeFree(x + 2, y)) rspeed = hspeed
+				else rspeed = 0
 			}
 
 			//Movement
 			if(!freeDown2) {
 				if(anim == anSlide) {
-					if(hspeed > 0) hspeed -= friction / 3
-					if(hspeed < 0) hspeed += friction / 3
-					if(abs(hspeed) == 0) {
-						if(placeFree(x, y - 16)) {
-							anim = anStand
-							shape = shapeStand
-						} else {
-							if(getcon("left", "hold")) hspeed -= 0.1
-							if(getcon("right", "hold")) hspeed += 0.1
-						}
-					}
+					if(hspeed > 0) hspeed -= friction / 3.0
+					if(hspeed < 0) hspeed += friction / 3.0
 				} else {
 					if(hspeed > 0) {
 						if(!getcon("right", "hold")) hspeed -= friction
-						else hspeed -= friction / 4
 					}
 					if(hspeed < 0) {
 						if(!getcon("left", "hold")) hspeed += friction
-						else hspeed += friction / 4
 					}
 				}
 			}
 			else if(anim != anSlide && anim != anDive) {
-				if(hspeed > 0 && !getcon("right", "hold")) hspeed -= friction / 3
-				if(hspeed < 0 && !getcon("left", "hold")) hspeed += friction / 3
+				if(hspeed > 0 && !getcon("right", "hold")) hspeed -= friction / 3.0
+				if(hspeed < 0 && !getcon("left", "hold")) hspeed += friction / 3.0
 			}
 
 			if(abs(hspeed) < friction) hspeed = 0.0
-			if(placeFree(x, y + 2) && (vspeed < 1.5 || (vspeed < 3 && (game.weapon != 3 || getcon("down", "hold"))))) vspeed += gravity
+			if(placeFree(x, y + 2) && (vspeed < 2 || (vspeed < 5 && (game.weapon != 3 || getcon("down", "hold")) && !nowInWater))) vspeed += gravity
 			if(!freeUp && vspeed < 0) vspeed = 0.0 //If Tux bumped his head
-			if(!freeDown && vspeed >= 0) {
-				//If Tux hits the ground while sliding
-				if(anim == anSlide) {
-					if(flip) hspeed -= vspeed / 5
-					else hspeed += vspeed / 5
 
-					if(game.weapon == 2) {
-						if(hspeed > 6) hspeed = 6
-						if(hspeed < -6) hspeed = -6
-					}
-					else {
-						if(hspeed > 4) hspeed = 4
-						if(hspeed < -4) hspeed = -4
-					}
-				} else vspeed = 0.0
+			//Entering water
+			if(nowInWater && !wasInWater) {
+				wasInWater = true
+				vspeed /= 2.0
+				newActor(Splash, x, y)
+			}
+			if(!nowInWater && wasInWater) {
+				wasInWater = false
+				newActor(Splash, x, y)
+			}
+
+
+			if(anim == anSlide && !freeDown && vspeed >= 0 && placeFree(x + hspeed, y)) {
+				//If Tux hits the ground while sliding
+				if(flip) hspeed -= vspeed / 2.5
+				else hspeed += vspeed / 2.5
+				vspeed = 0
+			}
+
+			//Max ground speed
+			if(!freeDown){
+				if(game.weapon == 2) {
+					if(hspeed > 8) hspeed = 8
+					if(hspeed < -8) hspeed = -8
+				}
+				else {
+					if(hspeed > 6) hspeed = 6
+					if(hspeed < -6) hspeed = -6
+				}
 			}
 
 			//Gravity cases
-			if(game.weapon == 3) gravity = 0.05
-			else gravity = 0.11
+			if(game.weapon == 3 || nowInWater) gravity = 0.12
+			else gravity = 0.25
 			if(anim == anClimb || anim == anWall) gravity = 0
 
 			//Attacks
@@ -477,10 +511,13 @@
 						local fx = 6
 						if(flip == 1) fx = -5
 						local c = actor[newActor(Fireball, x + fx, y - 4)]
-						if(!flip) c.hspeed = 3
-						else c.hspeed = -3
+						if(!flip) c.hspeed = 5
+						else c.hspeed = -5
 						playSound(sndFireball, 0)
-						if(getcon("up", "hold")) c.vspeed = -2
+						if(getcon("up", "hold")) {
+							c.vspeed = -2.5
+							c.hspeed /= 1.5
+						}
 						if(getcon("down", "hold")) {
 							c.vspeed = 2
 							c.hspeed /= 1.5
@@ -495,8 +532,8 @@
 						local fx = 6
 						if(flip == 1) fx = -5
 						local c = actor[newActor(Iceball, x + fx, y - 4)]
-						if(!flip) c.hspeed = 3
-						else c.hspeed = -3
+						if(!flip) c.hspeed = 5
+						else c.hspeed = -5
 						playSound(sndFireball, 0)
 						if(getcon("up", "hold")) c.vspeed = -2
 						if(getcon("down", "hold")) {
@@ -509,10 +546,20 @@
 					break
 
 				case 3:
-					if(getcon("shoot", "press") && (anim == anJumpT || anim == anJumpU || anim == anFall)) {
+					if(getcon("shoot", "press") && (anim == anJumpT || anim == anJumpU || anim == anFall) && anim != anHurt) {
 						anim = anDive
 						frame = anim[0]
-						playSound(sndSlide, 0)
+						playSoundChannel(sndSlide, 0, 0)
+						if(flip == 0 && hspeed < 2) hspeed = 2
+						if(flip == 1 && hspeed > -2) hspeed = -2
+					}
+					break
+
+				case 4:
+					if(getcon("shoot", "press") && (anim != anHurt)) {
+						anim = anDive
+						frame = anim[0]
+						playSoundChannel(sndSlide, 0, 0)
 						if(flip == 0 && hspeed < 2) hspeed = 2
 						if(flip == 1 && hspeed > -2) hspeed = -2
 					}
@@ -527,6 +574,11 @@
 			swimming = true
 			if(game.weapon == 3 && energy < 4) energy += 0.1
 			shapeStand.h = 6.0
+			if(!wasInWater) {
+				wasInWater = true
+				vspeed /= 2.0
+				newActor(Splash, x, y)
+			}
 
 			//Animation states
 			switch(anim) {
@@ -543,12 +595,13 @@
 						anim = anFall
 						frame = anim[0]
 					}
+					break
 				case anFall:
 					frame += 0.01
 					break
 			}
 
-			frame = wrap(frame, anim[0], anim[1])
+			frame = wrap(abs(frame), anim[0], anim[1])
 
 			//Swich swim directions
 			if(anim != anHurt) {
@@ -563,16 +616,16 @@
 			//Movement
 			if(canMove) {
 				if(getcon("run", "hold") || (abs(joyX(0)) >= js_max * 0.9 || abs(joyY(0)) >= js_max * 0.9)) {
-					if(game.weapon == 2) mspeed = 2.0
-					else mspeed = 1.75
+					if(game.weapon == 2) mspeed = 3.0
+					else mspeed = 2.8
 				}
 				else if(getcon("sneak", "hold") || (abs(joyX(0)) <= js_max * 0.4 && abs(joyX(0)) > js_max * 0.1) || (abs(joyY(0)) <= js_max * 0.4 && abs(joyY(0)) > js_max * 0.1)) mspeed = 0.5
-				else mspeed = 1
+				else mspeed = 1.0
 
-				if(getcon("right", "hold") && hspeed < mspeed && anim != anWall && anim != anSlide && anim != anHurt) hspeed += 0.05
-				if(getcon("left", "hold") && hspeed > -mspeed && anim != anWall && anim != anSlide && anim != anHurt) hspeed -= 0.05
-				if(getcon("down", "hold") && vspeed < mspeed && anim != anWall && anim != anSlide && anim != anHurt) vspeed += 0.05
-				if(getcon("up", "hold") && vspeed > -mspeed && anim != anWall && anim != anSlide && anim != anHurt) vspeed -= 0.05
+				if(getcon("right", "hold") && hspeed < mspeed && anim != anWall && anim != anSlide && anim != anHurt) hspeed += 0.1
+				if(getcon("left", "hold") && hspeed > -mspeed && anim != anWall && anim != anSlide && anim != anHurt) hspeed -= 0.1
+				if(getcon("down", "hold") && vspeed < mspeed && anim != anWall && anim != anSlide && anim != anHurt) vspeed += 0.1
+				if(getcon("up", "hold") && vspeed > -mspeed && anim != anWall && anim != anSlide && anim != anHurt) vspeed -= 0.1
 			}
 
 			//Friction
@@ -582,6 +635,7 @@
 			if(vspeed > 0) vspeed -= friction / 2
 			if(vspeed < 0) vspeed += friction / 2
 			if(abs(vspeed) < friction / 2) vspeed = 0.0
+			if(vspeed > 4) vspeed -= 0.2
 
 			//Change facing
 			if(anim != anClimb && anim != anWall) {
@@ -595,29 +649,29 @@
 					if(getcon("shoot", "press") && anim != anSlide && anim != anHurt && energy > 0) {
 						local fx = 6
 						if(flip == 1) fx = -5
-						local c = actor[newActor(Fireball, x + fx, y - 4)]
-						if(!flip) c.hspeed = 1.5
-						else c.hspeed = -1.5
+						local c = actor[newActor(Fireball, x + fx, y)]
+						if(!flip) c.hspeed = 3
+						else c.hspeed = -3
 						playSound(sndFireball, 0)
 						if(getcon("up", "hold")) {
-							c.vspeed = -1.0
+							c.vspeed = -3
 							if(hspeed != 0) c.hspeed *= 0.75
 							else {
 								c.hspeed = 0
-								c.vspeed = -1.5
+								c.vspeed = -3
 							}
 						}
 						if(getcon("down", "hold")) {
-							c.vspeed = 1.0
+							c.vspeed = 3
 							if(hspeed != 0) c.hspeed *= 0.75
 							else {
 								c.hspeed = 0
-								c.vspeed = 1.5
+								c.vspeed = 3
 							}
 						}
 
-						c.hspeed += hspeed / 1.5
-						c.vspeed += vspeed / 1.5
+						c.hspeed += hspeed / 3
+						c.vspeed += vspeed / 3
 
 						energy--
 						firetime = 60
@@ -628,24 +682,24 @@
 					if(getcon("shoot", "press") && anim != anSlide && anim != anHurt && energy > 0) {
 						local fx = 6
 						if(flip == 1) fx = -5
-						local c = actor[newActor(Iceball, x + fx, y - 4)]
-						if(!flip) c.hspeed = 1.5
-						else c.hspeed = -1.5
+						local c = actor[newActor(Iceball, x + fx, y)]
+						if(!flip) c.hspeed = 3
+						else c.hspeed = -3
 						playSound(sndFireball, 0)
 						if(getcon("up", "hold")) {
-							c.vspeed = -1.0
+							c.vspeed = -3
 							if(hspeed != 0) c.hspeed *= 0.75
 							else {
 								c.hspeed = 0
-								c.vspeed = -1.5
+								c.vspeed = -3
 							}
 						}
 						if(getcon("down", "hold")) {
-							c.vspeed = 1.0
+							c.vspeed = 3
 							if(hspeed != 0) c.hspeed *= 0.75
 							else {
 								c.hspeed = 0
-								c.vspeed = 1.5
+								c.vspeed = 3
 							}
 						}
 
@@ -668,23 +722,27 @@
 		if(placeFree(x, y + vspeed)) y += vspeed
 		else {
 			vspeed /= 2
+			if(abs(vspeed) < 0.01) vspeed = 0
 			//if(abs(vspeed) > 1) vspeed -= vspeed / abs(vspeed)
 			if(placeFree(x, y + vspeed)) y += vspeed
 		}
 
 		if(hspeed != 0) {
 			if(placeFree(x + hspeed, y)) { //Try to move straight
-				for(local i = 0; i < 2; i++) if(!placeFree(x, y + 2) && placeFree(x + hspeed, y + 1) && !swimming && vspeed >= 0) {
+				for(local i = 0; i < 4; i++) if(!placeFree(x, y + 4) && placeFree(x + hspeed, y + 1) && !swimming && vspeed >= 0 && !placeFree(x + hspeed, y + 4)) {
 					y += 1
 				}
 				x += hspeed
 			} else {
 				local didstep = false
-				for(local i = 1; i <= 4; i++){ //Try to move up hill
+				for(local i = 1; i <= 8; i++){ //Try to move up hill
 					if(placeFree(x + hspeed, y - i)) {
 						x += hspeed
 						y -= i
-						if(i > 2) hspeed /= 2
+						if(i > 2) {
+							if(hspeed > 0) hspeed -= 0.2
+							if(hspeed < 0) hspeed += 0.2
+						}
 						didstep = true
 						break
 					}
@@ -712,11 +770,15 @@
 		}
 		if(y < -100) y = -100.0
 
+		//Set ice friction
+		if(onIce()) friction = 0.05
+		else friction = 0.1
+
 		//Hurt
 		if(onHazard(x, y)) hurt = true
 		if(onDeath(x, y)) game.health = 0
 
-		if(hurt) {
+		if(hurt && invincible == 0) {
 			hurt = false
 			if(blinking == 0) {
 				blinking = 120
@@ -724,8 +786,11 @@
 				frame = anim[0]
 				if(game.health > 0) game.health--
 				playSound(sndHurt, 0)
+				if(flip == 0) hspeed = -2.0
+				else hspeed = 2.0
 			}
 		}
+		else hurt = false
 		if(blinking > 0) blinking--
 		if(game.health == 0) {
 			die()
@@ -763,8 +828,8 @@
 			}
 			if(((invincible % 2 == 0 && invincible > 240) || (invincible % 4 == 0 && invincible > 120) || invincible % 8 == 0) && invincible > 0) newActor(Glimmer, x + 10 - randInt(20), y + 10- randInt(20))
 
-			if(blinking == 0 || anim == anHurt) drawSpriteEx(sprite, floor(frame), x - camx, y - camy, 0, flip, 1, 1, 1)
-			else drawSpriteEx(sprite, floor(frame), x - camx, y - camy, 0, flip, 1, 1, wrap(blinking, 0, 10).tofloat() / 10.0)
+			if(blinking == 0 || anim == anHurt) drawSpriteExZ(0, sprite, floor(frame), x - camx, y - camy, 0, flip, 1, 1, 1)
+			else drawSpriteExZ(0, sprite, floor(frame), x - camx, y - camy, 0, flip, 1, 1, wrap(blinking, 0, 10).tofloat() / 10.0)
 			if(debug) {
 				setDrawColor(0x008000ff)
 				shape.draw()
@@ -774,12 +839,14 @@
 		//Transformation flash
 		if(tftime != -1) {
 			if(tftime < 4) {
-				if(!hidden) drawSprite(sprTFflash, tftime, x - camx, y - camy)
+				if(!hidden) drawSpriteZ(1, sprTFflash, tftime, x - camx, y - camy)
 				tftime += 0.25
 			} else tftime = -1
 		}
 
 		hidden = false
+
+		if(debug) drawText(font, x - camx - 8, y - 32 - camy, anim[2] + "\n" + frame.tostring())
 	}
 
 	function atLadder() {
@@ -800,11 +867,11 @@
 		//Check against places in solid layer
 		if(wl != null) {
 			local tile = cx + (cy * wl.width)
-			if(tile >= 0 && tile < wl.data.len()) if(wl.data[tile] - gvMap.solidfid == 29) {
+			if(tile >= 0 && tile < wl.data.len()) if(wl.data[tile] - gvMap.solidfid == 29 || wl.data[tile] - gvMap.solidfid == 50) {
 				gvMap.shape.setPos((cx * 16) + 8, (cy * 16) + 8)
 				gvMap.shape.kind = 0
 				gvMap.shape.w = 1.0
-				gvMap.shape.h = 8.0
+				gvMap.shape.h = 12.0
 				if(hitTest(ns, gvMap.shape)) return true
 			}
 		}
@@ -814,7 +881,7 @@
 
 	function die() {
 		deleteActor(id)
-		gvPlayer = 0
+		gvPlayer = false
 		newActor(TuxDie, x, y)
 		game.health = 0
 	}
@@ -840,30 +907,31 @@
 
 		switch(swap) {
 			case 1:
-				newActor(FlowerFire, x, y)
+				newActor(FlowerFire, x + hspeed, y + vspeed)
 				break
 			case 2:
-				newActor(FlowerIce, x, y)
+				newActor(FlowerIce, x + hspeed y + vspeed)
 				break
 			case 3:
-				newActor(AirFeather, x, y)
+				newActor(AirFeather, x + hspeed, y + vspeed)
 				break
 			case 4:
+				newActor(EarthShell, x + hspeed, y + vspeed)
 				break
 			case 5:
 				if(game.health < game.maxHealth) {
-					newActor(MuffinBlue, x, y)
+					newActor(MuffinBlue, x + hspeed, y + vspeed)
 					game.subitem = 0
 				}
 				break
 			case 6:
 				if(game.health < game.maxHealth) {
-					newActor(MuffinRed, x, y)
+					newActor(MuffinRed, x + hspeed, y + vspeed)
 					game.subitem = 0
 				}
 				break
 			case 7:
-				newActor(Starnyan, x, y)
+				newActor(Starnyan, x + hspeed, y + vspeed)
 				break
 		}
 	}
@@ -872,8 +940,8 @@
 }
 
 ::TuxDie <- class extends Actor {
-	vspeed = -3.0
-	timer = 300
+	vspeed = -4.0
+	timer = 150
 	mywep = 0
 
 	constructor(_x, _y, _arr = null) {
@@ -882,16 +950,16 @@
 		playSound(sndDie, 0)
 		mywep = game.weapon
 		if(game.lives == 0 || game.check == false) game.weapon = 0
+		if(game.lives == 0) game.check = false
+		if(game.lives > 0) game.lives--
 	}
 
 	function run() {
-		vspeed += 0.05
+		vspeed += 0.1
 		y += vspeed
 		timer--
 		if(timer == 0) {
 			startPlay(gvMap.file)
-			if(game.check == true || game.difficulty > 0) if(game.lives > 0) game.lives--
-			if(game.lives == 0) game.check = false
 			if(game.check == false) gvIGT = 0
 		}
 		switch(mywep) {
@@ -906,6 +974,9 @@
 				break
 			case 3:
 				drawSprite(sprTuxAir, wrap(getFrames() / 15, 50, 51), floor(x - camx), floor(y - camy))
+				break
+			case 4:
+				drawSprite(sprTuxEarth, wrap(getFrames() / 15, 50, 51), floor(x - camx), floor(y - camy))
 				break
 		}
 	}

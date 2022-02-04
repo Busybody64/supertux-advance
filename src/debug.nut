@@ -24,13 +24,14 @@
 
 	//Set weapon
 	if(keyPress(k_1)) game.weapon = 0
-	if(keyPress(k_2)) game.weapon = 1
-	if(keyPress(k_3)) game.weapon = 2
-	if(keyPress(k_4)) game.weapon = 3
+	if(keyPress(k_2)) { game.weapon = 1; game.maxenergy = 4 - game.difficulty }
+	if(keyPress(k_3)) { game.weapon = 2; game.maxenergy = 4 - game.difficulty }
+	if(keyPress(k_4)) { game.weapon = 3; game.maxenergy = 4 - game.difficulty }
+	if(keyPress(k_5)) { game.weapon = 4; game.maxenergy = 4 - game.difficulty }
 	if(keyPress(k_equals)) game.lives++
 
 	//Teleport
-	if(gvPlayer != 0 && mouseDown(0)) {
+	if(gvPlayer && mouseDown(0)) {
 		gvPlayer.x = mouseX() + camx
 		gvPlayer.y = mouseY() + camy
 
@@ -42,9 +43,9 @@
 
 	local message = ""
 
-	if(gvPlayer != 0) {
-		message += "X: " + floor(gvPlayer.x) + "\n"
-		message += "Y: " + floor(gvPlayer.y) + "\n"
+	if(gvPlayer) {
+		message += "X: " + gvPlayer.x + "\n"
+		message += "Y: " + gvPlayer.y + "\n"
 	}
 	else {
 		message += "X: YOU'RE\nY:  DEAD\n"
@@ -62,13 +63,10 @@
 	drawSprite(sprDebug, getcon("shoot", "hold").tointeger() + 10, 12, 72)
 	drawSprite(sprDebug, getcon("run", "hold").tointeger() + 12, 20, 72)
 
-	message += "HSPD:"
-	if(gvPlayer != 0) for(local i = 0; i < abs(round(gvPlayer.hspeed * 2)); i++) message += chint(16)
-	message += "\nVSPD:"
-	if(gvPlayer != 0) {
-		if(gvPlayer.vspeed < 0) for(local i = 0; i < abs(round(gvPlayer.vspeed * 2)); i++) message += chint(30)
-		else for(local i = 0; i < abs(round(gvPlayer.vspeed * 2)); i++) message += chint(31)
-	}
+	message += "HSPD: "
+	if(gvPlayer) message += gvPlayer.hspeed.tostring()
+	message += "\nVSPD: "
+	if(gvPlayer) message += gvPlayer.vspeed.tostring()
 	message += "\n\n"
 	if(gvMap != 0) message += "Map W: " + gvMap.w + "\n"
 	if(gvMap != 0) message += "Map H: " + gvMap.h + "\n"
@@ -119,5 +117,19 @@
 		drawText(font, 0, 0, output)
 
 		update()
+	}
+}
+
+::PolyTest <- class extends Actor {
+	path = null
+
+	constructor(_x, _y, _arr = null) {
+		base.constructor(_x, _y)
+		path = _arr[0]
+	}
+
+	function run() {
+		setDrawColor(0xff0000ff)
+		for(local i = 0; i < path.len() - 1; i++) drawLine(path[i][0] - camx, path[i][1] - camy, path[i + 1][0] - camx, path[i + 1][1] - camy)
 	}
 }

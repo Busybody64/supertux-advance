@@ -6,6 +6,8 @@
 
 [mrkubax10](https://github.com/mrkubax10) - Language menu
 
+[FrostC](https://www.youtube.com/channel/UCy9RpAf9M8icNBRXf3S6rmw) - Jumpy, Darknyan
+
 ## Graphics and Sounds
 
 [Kelvin Shadewing](http://kelvinshadewing.net) - Tux, Cannon Bob, Igloo edits, Mama Bear, pipe tiles, pipe snake, muffin, deathcap, star nyan, heart, fonts, item blocks, debug graphics, elemental explosions
@@ -48,7 +50,7 @@
 
 [Spring](https://opengameart.org/users/spring-spring) - Large flame
 
-[FrostC](https://www.youtube.com/channel/UCy9RpAf9M8icNBRXf3S6rmw) - Toxic muffin, strawberry muffin, bomb muffin, Haywire, Tux doll, Orange
+[FrostC](https://www.youtube.com/channel/UCy9RpAf9M8icNBRXf3S6rmw) - Toxic muffin, strawberry muffin, bomb muffin, Haywire, Tux doll, Orange, Darknyan
 
 [TheCheeseWeez]() - Mega muffin
 
@@ -61,6 +63,8 @@
 [Kutejnikov](https://opengameart.org/users/kutejnikov) - Shipwreck tiles
 
 [Nushio](http://opengameart.org/users/nushio) - LPC Terrain 2
+
+[Jesse McCarthy](https://opengameart.org/users/jesse-mccarthy) - Splash
 
 UbuntuJackson - UFO
 
@@ -126,4 +130,4 @@ Click each mascot to learn more about them and the projects they're associated w
 
 **Contribute 20 USD or more at [Kelvin Shadewing's Ko-Fi](https://ko-fi.com/kelvinshadewing) to be permanantly added to this list!**
 
-Blinkehyo, Cosmo Space Dragon, Hazel Roo, Kevin Pandaheart, Keyla Otter, Luke the Foxen, Neon Blade, Bazzel, Admiral Spraker
+[Blinkehyo](https://www.youtube.com/c/Blinkehyo), [Cosmo Space Dragon](https://www.youtube.com/channel/UCUWmz_daYiPH0YJ-SzLssAg), Hazel Roo, [Kevin Pandaheart](https://www.youtube.com/fichinga), Keyla Otter, [Luke the Foxen](https://www.deviantart.com/lukethefoxen), Neon Blade, Bazzel, [Admiral Spraker](https://www.twitch.tv/adm_spraker)

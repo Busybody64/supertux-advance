@@ -6,3 +6,5 @@ config.json
 game.json
 *.blame
 save/*.json
+mods/*
+mods/*.*

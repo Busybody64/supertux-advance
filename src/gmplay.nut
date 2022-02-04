@@ -10,7 +10,7 @@
 	if(!fileExists(level)) return
 
 	//Clear actors and start creating new ones
-	gvPlayer = 0
+	gvPlayer = false
 	actor.clear()
 	actlast = 0
 	game.health = game.maxHealth
@@ -20,10 +20,6 @@
 	game.enemies = 0
 	gvInfoBox = ""
 	gvLastSong = ""
-	if(game.lives == 0) {
-		game.check = false
-		gvIGT = 0
-	}
 	autocon = {
 		up = false
 		down = false
@@ -72,233 +68,307 @@
 	//Start making actors
 	foreach(i in actlayer.objects)
 	{
-		local n = i.gid - tilef
+		//Tile actors
+		if(i.rawin("gid")) {
+			local n = i.gid - tilef
 
-		//Get the tile number and make an actor
-		//according to the image used in actors.png
-		switch(n)
-		{
-			case 0:
-				//newActor(Tux, i.x, i.y - 16)
-				if(gvPlayer == 0 && getroottable().rawin(game.playerchar)) {
-					if(game.check == false) newActor(getroottable()[game.playerchar], i.x + 8, i.y - 16)
-					else newActor(getroottable()[game.playerchar], game.chx, game.chy)
+			//Get the tile number and make an actor
+			//according to the image used in actors.png
+			switch(n)
+			{
+				case 0:
+					//newActor(Tux, i.x, i.y - 16)
+					if(!gvPlayer && getroottable().rawin(game.playerchar)) {
+						if(game.check == false) newActor(getroottable()[game.playerchar], i.x + 8, i.y - 16)
+						else newActor(getroottable()[game.playerchar], game.chx, game.chy)
+					}
+					break
+
+				case 1:
+					newActor(Coin, i.x + 8, i.y - 8)
+					break
+
+				case 2:
+					newActor(ItemBlock, i.x + 8, i.y - 8, 0)
+					game.maxcoins++
+					break
+
+				case 3:
+					newActor(ItemBlock, i.x + 8, i.y - 8, 1)
+					break
+
+				case 4:
+					newActor(ItemBlock, i.x + 8, i.y - 8, 2)
+					break
+
+				case 5:
+					newActor(ItemBlock, i.x + 8, i.y - 8, 3)
+					break
+
+				case 6:
+					newActor(ItemBlock, i.x + 8, i.y - 8, 5)
+					break
+
+				case 7:
+					newActor(ItemBlock, i.x + 8, i.y - 8, 4)
+					break
+
+				case 8:
+					newActor(ItemBlock, i.x + 8, i.y - 8, 6)
+					break
+
+				case 9:
+					newActor(BadCannon, i.x + 8, i.y - 8)
+					break
+
+				case 10:
+					newActor(PipeSnake, i.x, i.y, 1)
+					//Enemies are counted at level creation so ones created indefinitely don't count against achievements
+					game.enemies++
+					break
+
+				case 11:
+					newActor(PipeSnake, i.x, i.y - 16, -1)
+					game.enemies++
+					break
+
+				case 12:
+					newActor(Deathcap, i.x + 8, i.y - 8, false)
+					game.enemies++
+					break
+
+				case 13:
+					newActor(Deathcap, i.x + 8, i.y - 8, true)
+					game.enemies++
+					break
+
+				case 14:
+					newActor(IceBlock, i.x + 8, i.y - 8)
+					break
+
+				case 15:
+					newActor(WoodBlock, i.x + 8, i.y - 8, i.name)
+					break
+
+				case 16:
+					local c = actor[newActor(Spring, i.x + 8, i.y - 8, 0)]
+					if(i.name != "") c.power = i.name.tofloat()
+					break
+
+				case 17:
+					local c = actor[newActor(Spring, i.x + 8, i.y - 8, 1)]
+					if(i.name != "") c.power = i.name.tofloat()
+					break
+
+				case 18:
+					local c = actor[newActor(Spring, i.x + 8, i.y - 8, 2)]
+					if(i.name != "") c.power = i.name.tofloat()
+					break
+
+				case 19:
+					local c = actor[newActor(Spring, i.x + 8, i.y - 8, 3)]
+					if(i.name != "") c.power = i.name.tofloat()
+					break
+
+				case 20:
+					newActor(Ouchin, i.x + 8, i.y - 8)
+					break
+
+				case 21:
+					newActor(TriggerBlock, i.x + 8, i.y - 8, i.name)
+					break
+
+				case 22:
+					newActor(InfoBlock, i.x + 8, i.y - 8, textLineLen(gvLangObj["info"][i.name], 52))
+					break
+
+				case 23:
+					newActor(KelvinScarf, i.x + 8, i.y - 8, textLineLen(gvLangObj["devcom"][i.name], 52))
+					break
+
+				case 24:
+					local c = actor[newActor(ItemBlock, i.x + 8, i.y - 8)]
+					c.item = 7
+					break
+
+				case 25:
+					newActor(FlyRefresh, i.x + 8, i.y - 8)
+					break
+
+				case 26:
+					newActor(CarlBoom, i.x + 8, i.y - 8)
+					game.enemies++
+					break
+
+				case 27:
+					newActor(SnowBounce, i.x + 8, i.y - 8)
+					game.enemies++
+					break
+
+				case 28:
+					newActor(BlueFish, i.x + 8, i.y - 8)
+					game.enemies++
+					break
+
+				case 29:
+					newActor(RedFish, i.x + 8, i.y - 8)
+					game.enemies++
+					break
+
+				case 30:
+					newActor(BounceBlock, i.x + 8, i.y - 8)
+					break
+
+				case 31:
+					actor[newActor(NPC, i.x + 8, i.y, i.name)]
+					break
+
+				case 32:
+					newActor(Checkpoint, i.x + 8, i.y - 16)
+					break
+
+				case 33:
+					newActor(ItemBlock, i.x + 8, i.y - 8, 8)
+					break
+
+				case 34:
+					newActor(TNT, i.x + 8, i.y - 8)
+					break
+
+				case 35:
+					newActor(C4, i.x + 8, i.y - 8)
+					break
+
+				case 36:
+					newActor(JellyFish, i.x + 8, i.y - 8)
+					game.enemies++
+					break
+
+				case 37:
+					newActor(Clamor, i.x + 8, i.y - 8, i.name)
+					game.enemies++
+					break
+
+				case 38:
+					newActor(ItemBlock, i.x + 8, i.y - 8, 9)
+					break
+
+				case 39:
+					newActor(ItemBlock, i.x + 8, i.y - 8, 10)
+					break
+
+				case 40:
+					local c = actor[newActor(SpringD, i.x + 8, i.y - 8, 0)]
+					if(i.name != "") c.power = i.name.tofloat()
+					break
+
+				case 41:
+					local c = actor[newActor(SpringD, i.x + 8, i.y - 8, 1)]
+					if(i.name != "") c.power = i.name.tofloat()
+					break
+
+				case 42:
+					local c = actor[newActor(SpringD, i.x + 8, i.y - 8, 2)]
+					if(i.name != "") c.power = i.name.tofloat()
+					break
+
+				case 43:
+					local c = actor[newActor(SpringD, i.x + 8, i.y - 8, 3)]
+					if(i.name != "") c.power = i.name.tofloat()
+					break
+
+				case 44:
+					newActor(GreenFish, i.x + 8, i.y - 8)
+					game.enemies++
+					break
+
+				case 45:
+					newActor(Icicle, i.x + 8, i.y - 8)
+					break
+
+				case 46:
+					newActor(FlyAmanita, i.x + 8, i.y - 8, i.name)
+					game.enemies++
+					break
+
+				case 48:
+					newActor(ColorSwitch, i.x, i.y - 16, 0)
+					break
+
+				case 56:
+					newActor(ColorBlock, i.x, i.y - 16, 0)
+					break
+
+				case 64: //Custom actor gear
+					if(i.name == "") break
+					local arg = split(i.name, ",")
+					local n = arg[0]
+					arg.remove(0)
+					if(arg.len() == 1) arg = arg[0]
+					else if(arg.len() == 0) arg = null
+					print(n)
+					if(getroottable().rawin(n)) if(typeof getroottable()[n] == "class") newActor(getroottable()[n], i.x + 8, i.y - 8, arg)
+					break
+
+				case 65:
+					newActor(Haywire, i.x + 8, i.y - 8)
+					game.enemies++
+					break
+
+				case 73:
+					newActor(Jumpy, i.x + 8, i.y - 8, i.name)
+					game.enemies++
+					break
+
+				case 75:
+					newActor(EvilBlock, i.x + 8, i.y - 8)
+					break
+
+				case 78:
+					newActor(Berry, i.x + 8, i.y - 8)
+					break
+			}
+		}
+
+		//Polygon actors
+		if(i.rawin("polygon")) if(i.name != "") {
+			local arg = split(i.name, ",")
+			local n = arg[0]
+			if(getroottable().rawin(n))
+			{
+				print(i.id)
+
+				//Create polygon to pass to object
+				local poly = []
+				for(local j = 0; j <= i.polygon.len(); j++) {
+					if(j == i.polygon.len()) poly.push([i.x + i.polygon[0].x, i.y + i.polygon[0].y])
+					else poly.push([i.x + i.polygon[j].x, i.y + i.polygon[j].y])
 				}
-				break
 
-			case 1:
-				newActor(Coin, i.x + 8, i.y - 8)
-				break
+				arg[0] = poly
+				if(getroottable().rawin(n)) if(typeof getroottable()[n] == "class") newActor(getroottable()[n], i.x, i.y, arg)
+			}
+		}
 
-			case 2:
-				newActor(ItemBlock, i.x + 8, i.y - 8, 0)
-				game.maxcoins++
-				break
+		//Polygon actors
+		if(i.rawin("polyline")) if(i.name != "") {
+			local arg = split(i.name, ",")
+			local n = arg[0]
+			if(getroottable().rawin(n))
+			{
+				print(i.id)
 
-			case 3:
-				newActor(ItemBlock, i.x + 8, i.y - 8, 1)
-				break
+				//Create polygon to pass to object
+				local poly = []
+				for(local j = 0; j < i.polyline.len(); j++) poly.push([i.x + i.polyline[j].x, i.y + i.polyline[j].y])
 
-			case 4:
-				newActor(ItemBlock, i.x + 8, i.y - 8, 2)
-				break
-
-			case 5:
-				newActor(ItemBlock, i.x + 8, i.y - 8, 3)
-				break
-
-			case 6:
-				newActor(ItemBlock, i.x + 8, i.y - 8, 5)
-				break
-
-			case 7:
-				newActor(ItemBlock, i.x + 8, i.y - 8, 4)
-				break
-
-			case 8:
-				newActor(ItemBlock, i.x + 8, i.y - 8, 6)
-				break
-
-			case 9:
-				newActor(BadCannon, i.x + 8, i.y - 8)
-				break
-
-			case 10:
-				newActor(PipeSnake, i.x, i.y, 1)
-				//Enemies are counted at level creation so ones created indefinitely don't count against achievements
-				game.enemies++
-				break
-
-			case 11:
-				newActor(PipeSnake, i.x, i.y - 16, -1)
-				game.enemies++
-				break
-
-			case 12:
-				newActor(Deathcap, i.x + 8, i.y - 8, false)
-				game.enemies++
-				break
-
-			case 13:
-				newActor(Deathcap, i.x + 8, i.y - 8, true)
-				game.enemies++
-				break
-
-			case 14:
-				newActor(IceBlock, i.x + 8, i.y - 8)
-				break
-
-			case 15:
-				newActor(WoodBlock, i.x + 8, i.y - 8)
-				break
-
-			case 16:
-				newActor(Spring, i.x, i.y - 16, 0)
-				break
-
-			case 17:
-				newActor(Spring, i.x, i.y - 16, 1)
-				break
-
-			case 18:
-				newActor(Spring, i.x, i.y - 16, 2)
-				break
-
-			case 19:
-				newActor(Spring, i.x, i.y - 16, 3)
-				break
-
-			case 20:
-				newActor(Ouchin, i.x + 8, i.y - 8)
-				break
-
-			case 21:
-				newActor(TriggerBlock, i.x + 8, i.y - 8, i.name)
-				break
-
-			case 22:
-				newActor(InfoBlock, i.x + 8, i.y - 8, textLineLen(gvLangObj["info"][i.name], 52))
-				break
-
-			case 23:
-				newActor(KelvinScarf, i.x + 8, i.y - 8, textLineLen(gvLangObj["devcom"][i.name], 52))
-				break
-
-			case 24:
-				local c = actor[newActor(ItemBlock, i.x + 8, i.y - 8)]
-				c.item = 7
-				break
-
-			case 25:
-				newActor(FlyRefresh, i.x + 8, i.y - 8)
-				break
-
-			case 26:
-				newActor(CarlBoom, i.x + 8, i.y - 8)
-				game.enemies++
-				break
-
-			case 27:
-				newActor(SnowBounce, i.x + 8, i.y - 8)
-				game.enemies++
-				break
-
-			case 28:
-				newActor(BlueFish, i.x + 8, i.y - 8)
-				game.enemies++
-				break
-
-			case 29:
-				newActor(RedFish, i.x + 8, i.y - 8)
-				game.enemies++
-				break
-
-			case 30:
-				newActor(BounceBlock, i.x + 8, i.y - 8)
-				break
-
-			case 31:
-				actor[newActor(NPC, i.x + 8, i.y, i.name)]
-				break
-
-			case 32:
-				newActor(Checkpoint, i.x + 8, i.y - 16)
-				break
-
-			case 33:
-				newActor(ItemBlock, i.x + 8, i.y - 8, 8)
-				break
-
-			case 34:
-				newActor(TNT, i.x + 8, i.y - 8)
-				break
-
-			case 35:
-				newActor(C4, i.x + 8, i.y - 8)
-				break
-
-			case 36:
-				newActor(JellyFish, i.x + 8, i.y - 8)
-				game.enemies++
-				break
-
-			case 37:
-				newActor(Clamor, i.x + 8, i.y - 8, i.name)
-				game.enemies++
-				break
-
-			case 40:
-				newActor(SpringD, i.x, i.y - 16, 0)
-				break
-
-			case 41:
-				newActor(SpringD, i.x, i.y - 16, 1)
-				break
-
-			case 42:
-				newActor(SpringD, i.x, i.y - 16, 2)
-				break
-
-			case 43:
-				newActor(SpringD, i.x, i.y - 16, 3)
-				break
-
-			case 44:
-				newActor(GreenFish, i.x + 8, i.y - 8)
-				game.enemies++
-				break
-
-			case 45:
-				newActor(Icicle, i.x + 8, i.y - 8)
-				break
-
-			case 46:
-				newActor(FlyAmanita, i.x + 8, i.y - 8, i.name)
-				game.enemies++
-				break
-
-			case 48:
-				newActor(ColorSwitch, i.x, i.y - 16, 0)
-				break
-
-			case 56:
-				newActor(ColorBlock, i.x, i.y - 16, 0)
-				break
-
-			case 64: //Custom actor gear
-				if(i.name == "") break
-				local arg = split(i.name, ",")
-				local n = arg[0]
-				arg.remove(0)
-				if(arg.len() == 1) arg = arg[0]
-				else if(arg.len() == 0) arg = null
-				print(n)
-				if(getroottable().rawin(n)) if(typeof getroottable()[n] == "class") newActor(getroottable()[n], i.x + 8, i.y - 8, arg)
-				break
+				arg[0] = poly
+				if(getroottable().rawin(n)) if(typeof getroottable()[n] == "class") newActor(getroottable()[n], i.x, i.y, arg)
+			}
 		}
 	}
 
-	if(gvPlayer != 0) {
+	if(gvPlayer) {
 		camx = gvPlayer.x - (screenW() / 2)
 		camy = gvPlayer.y - (screenH() / 2)
 	}
@@ -338,17 +408,17 @@
 	local ux = gvMap.w - screenW()
 	local uy = gvMap.h - screenH()
 
-	if(gvPlayer != 0)
+	if(gvPlayer)
 	{
 		px = (gvPlayer.x + gvPlayer.hspeed * 32) - (screenW() / 2)
-		py = (gvPlayer.y + gvPlayer.vspeed * 8) - (screenH() / 2)
+		py = (gvPlayer.y + gvPlayer.vspeed * 2) - (screenH() / 2)
 	} else {
 		px = camx
 		py = camy
 	}
 
 	camx += (px - camx) / 16
-	camy += (py - camy) / 8
+	camy += (py - camy) / 2
 
 	if(camx > ux) camx = ux
 	if(camx < 0) camx = 0
@@ -356,19 +426,29 @@
 	if(camy < 0) camy = 0
 
 	//Draw
-	setDrawTarget(gvScreen)
+	//Separate texture for game world allows post-processing effects without including HUD
+	setDrawTarget(gvPlayScreen)
 
-	drawBG()
-	gvMap.drawTiles(floor(-camx), floor(-camy), floor(camx / 16), floor(camy / 16), 21, 17, "bg")
-	gvMap.drawTiles(floor(-camx), floor(-camy), floor(camx / 16), floor(camy / 16), 21, 17, "mg")
+	if(drawBG != 0) drawBG()
+	if(drawWeather != 0) drawWeather()
+	camxprev = camx
+	camyprev = camy
+
+	gvMap.drawTiles(floor(-camx), floor(-camy), floor(camx / 16) - 3, floor(camy / 16), 24, 24, "bg")
+	gvMap.drawTiles(floor(-camx), floor(-camy), floor(camx / 16) - 3, floor(camy / 16), 24, 24, "mg")
 	if(gvMap.name != "shop") for(local i = 0; i < screenW() / 16; i++) {
 		drawSprite(sprVoid, 0, 0 + (i * 16), gvMap.h - 32 - camy)
 	}
 	runActors()
+	drawZList(8)
 	if(actor.rawin("Water")) foreach(i in actor["Water"]) { i.draw() }
-	gvMap.drawTiles(floor(-camx), floor(-camy), floor(camx / 16), floor(camy / 16), 21, 17, "fg")
+	gvMap.drawTiles(floor(-camx), floor(-camy), floor(camx / 16) - 3, floor(camy / 16), 24, 20, "fg")
 	if(actor.rawin("SecretWall")) foreach(i in actor["SecretWall"]) { i.draw() }
 	if(debug) gvMap.drawTiles(floor(-camx), floor(-camy), floor(camx / 16), floor(camy / 16), 21, 17, "solid")
+
+	//HUDs
+	setDrawTarget(gvScreen)
+	drawImage(gvPlayScreen, 0, 0)
 
 	if(gvInfoBox == "") {
 		//Draw max energy
@@ -382,7 +462,7 @@
 		}
 		//Draw energy
 		for(local i = 0; i < game.maxenergy; i++) {
-			if(gvPlayer != 0) {
+			if(gvPlayer) {
 				if(gvPlayer.rawin("energy") && game.maxenergy > 0) {
 					if(i < floor(gvPlayer.energy)) drawSprite(sprEnergy, 1, 8 + (16 * i), 24)
 					else drawSprite(sprEnergy, 0, 8 + (16 * i), 24)
@@ -392,9 +472,8 @@
 
 		//Draw coins and lives
 		drawSprite(sprCoin, 0, 16, screenH() - 16)
-		if(game.maxcoins > 0) drawText(font2, 24, screenH() - 23, game.levelcoins.tostring() + "/" + game.maxcoins.tostring())
-		else drawText(font2, 24, screenH() - 23, game.coins.tostring())
-		drawSprite(game.characters[game.playerchar][1], game.weapon, screenW() - 16, screenH() - 12)
+		drawText(font2, 24, screenH() - 23, game.coins.tostring())
+		drawSprite(getroottable()[game.characters[game.playerchar][1]], game.weapon, screenW() - 16, screenH() - 12)
 		drawText(font2, screenW() - 26 - (game.lives.tostring().len() * 8), screenH() - 23, game.lives.tostring())
 
 		//Draw subitem
@@ -423,12 +502,22 @@
 				break
 		}
 
-		//Draw IGT
-		if(gvDoIGT) drawText(font2, 8, 32, formatTime(gvIGT))
+		//Draw level IGT
+		if(gvDoIGT && config.showleveligt) drawText(font2, 8, 32, formatTime(gvIGT))
 
 		//Draw offscreen player
-		if(gvPlayer != 0) if(gvPlayer.y < -8) {
-			drawSprite(game.characters[game.playerchar][1], game.weapon, gvPlayer.x - camx, 8 - (gvPlayer.y / 4))
+		if(gvPlayer) if(gvPlayer.y < -8) {
+			drawSprite(getroottable()[game.characters[game.playerchar][1]], game.weapon, gvPlayer.x - camx, 8 - (gvPlayer.y / 4))
+		}
+
+		//Draw warning sign
+		if(gvWarning < 180) {
+			if(gvWarning == 0 || gvWarning == 90) {
+				stopSound(4)
+				playSoundChannel(sndWarning, 0, 4)
+			}
+			drawSpriteEx(sprWarning, 0, screenW() / 2, screenH() / 2, 0, 0, 1, 1, abs(sin(gvWarning / 30.0)))
+			gvWarning += 1.5
 		}
 	}
 	else {
@@ -445,7 +534,9 @@
 
 	if(levelEndRunner == 0) gvIGT++
 	game.igt++
-	if(config.showigt) {
+
+	//Draw global IGT
+	if(config.showglobaligt) {
 		local gtd = formatTime(game.igt) //Game time to draw
 		drawText(font2, (screenW() / 2) - (gtd.len() * 4), screenH() - 24, gtd)
 	}
@@ -453,10 +544,16 @@
 	//Draw surface to screen
 	resetDrawTarget()
 	drawImage(gvScreen, 0, 0)
+
+	//Handle berries
+	if(gvPlayer) if(game.berries == 64) {
+		game.berries = 0
+		newActor(Starnyan, gvPlayer.x, gvPlayer.y)
+	}
 }
 
 ::playerTeleport <- function(_x, _y) { //Used to move the player and camera at the same time
-	if(gvPlayer == 0) return
+	if(!gvPlayer) return
 	if(gvMap == 0) return
 
 	local ux = gvMap.w - screenW()

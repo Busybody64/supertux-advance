@@ -50,6 +50,15 @@ const fontH = 14
 	if(getcon("jump", "press") || getcon("accept", "press")) {
 		menu[cursor].func()
 	}
+
+	if(getcon("pause", "press") && !(menu == mePausePlay || menu == mePauseOver || menu == meMain)) {
+		for(local i = 0; i < menu.len(); i++) {
+				if(menu[i].rawin("back")) {
+					menu[i]["back"]()
+					break
+				}
+		}
+	}
 }
 
 //Names are stored as functions because some need to change each time
@@ -74,6 +83,7 @@ const fontH = 14
 	{
 		name = function() { return gvLangObj["main-menu"]["quit"] },
 		func = function() { gvQuit = 1 }
+		back = function() { gvQuit = 1 }
 	}
 ]
 
@@ -98,8 +108,12 @@ const fontH = 14
 		func = function() { gvGameMode = gmOverworld }
 	},
 	{
+		name = function() { return gvLangObj["pause-menu"]["save"]},
+		func = function() { saveGame(); playSound(sndHeal, 0); gvGameMode = gmOverworld }
+	},
+	{
 		name = function() { return gvLangObj["pause-menu"]["character"]},
-		func = function() {  }
+		func = function() { pickChar() }
 	},
 	{
 		name = function() { return gvLangObj["pause-menu"]["quit-game"]},
@@ -121,12 +135,29 @@ const fontH = 14
 		func = function() { selectLanguage() }
 	},
 	{
-		name = function() { return gvLangObj["options-menu"]["speedrun"] + ": " + (config.showigt ? gvLangObj["bool"]["on"] : gvLangObj["bool"]["off"]) },
-		func = function() { config.showigt = !config.showigt}
+		name = function() { return gvLangObj["options-menu"]["timers"] },
+		func = function() { cursor = 0; menu = meTimers }
 	},
 	{
 		name = function() { return "Back" },
 		func = function() { cursor = 0; menu = meMain; fileWrite("config.json", jsonWrite(config)) }
+		back = function() { cursor = 0; menu = meMain; fileWrite("config.json", jsonWrite(config)) }
+	}
+]
+
+::meTimers <- [
+	{
+		name = function() { return gvLangObj["timers-menu"]["speedrun-timer-level"] + ": " + (config.showleveligt ? gvLangObj["bool"]["on"] : gvLangObj["bool"]["off"]) },
+		func = function() { config.showleveligt = !config.showleveligt }
+	},
+	{
+		name = function() { return gvLangObj["timers-menu"]["speedrun-timer-global"] + ": " + (config.showglobaligt ? gvLangObj["bool"]["on"] : gvLangObj["bool"]["off"]) },
+		func = function() { config.showglobaligt = !config.showglobaligt }
+	},
+	{
+		name = function() { return "Back" },
+		func = function() { cursor = 0; menu = meOptions }
+		back = function() { cursor = 0; menu = meOptions }
 	}
 ]
 
@@ -150,6 +181,7 @@ const fontH = 14
 	{
 		name = function() { return "Cancel" },
 		func = function() { cursor = 0; menu = meMain }
+		back = function() { cursor = 0; menu = meMain }
 	}
 ]
 
@@ -209,6 +241,7 @@ const fontH = 14
 	{
 		name = function() { return "Cancel" }
 		func = function() { cursor = 0; menu = meMain }
+		back = function() { cursor = 0; menu = meMain }
 	}
 ]
 
@@ -216,6 +249,7 @@ const fontH = 14
 	{
 		name = function() { drawText(font2, screenW() / 2 - (15 * 4), screenH() / 2, "Overwrite save?"); return "No" }
 		func = function() { menu = meNewGame; cursor = 0 }
+		back = function() { menu = meNewGame; cursor = 0 }
 	},
 	{
 		name = function() { return "Yes" }

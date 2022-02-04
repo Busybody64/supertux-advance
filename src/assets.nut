@@ -4,9 +4,9 @@
 
 //Main sprites
 ::sprFont <- newSprite("res/gfx/font.png", 6, 8, 0, 0, 0, 0)
-::font <- newFont(sprFont, 0, 0, 0, 0)
+::font <- newFont(sprFont, 0, 0, true, 0)
 ::sprFont2 <- newSprite("res/gfx/font2.png", 12, 14, 0, 0, 0, 0)
-::font2 <- newFont(sprFont2, 33, 0, 0, -4)
+::font2 <- newFont(sprFont2, 33, 0, true, -4)
 ::sprDebug <- newSprite("res/gfx/debugkeys.png", 8, 8, 0, 0, 0, 0)
 ::sprTitle <- newSprite("res/gfx/title.png", 220, 55, 0, 0, 110, 0)
 
@@ -19,10 +19,15 @@
 ::sprTuxDoll <- newSprite("res/gfx/tuxdoll.png", 16, 16, 0, 0, 8, 14)
 
 ::sprKonqi <- newSprite("res/gfx/konqi.png", 32, 32, 0, 0, 15, 19)
-::sprKonqiOverworld <- newSprite("res/gfx/konqiO.png", 14, 20, 0, 0, 7, 20)
+::sprKonqiFire <- newSprite("res/gfx/konqifire.png", 32, 32, 0, 0, 15, 19)
+::sprKonqiIce <- newSprite("res/gfx/konqiice.png", 32, 32, 0, 0, 15, 19)
+::sprKonqiAir <- newSprite("res/gfx/konqiair.png", 32, 32, 0, 0, 15, 19)
+::sprKonqiEarth <- newSprite("res/gfx/konqiearth.png", 32, 32, 0, 0, 15, 19)
+::sprKonqiOverworld <- newSprite("res/gfx/konqiO.png", 14, 20, 0, 0, 7, 17)
+::sprKonqiDoll <- newSprite("res/gfx/konqidoll.png", 16, 16, 0, 0, 8, 14)
 
 ::sprMidi <- newSprite("res/gfx/midi.png", 32, 32, 0, 0, 15, 19)
-::sprMidiOverworld <- newSprite("res/gfx/midiO.png", 14, 20, 0, 0, 7, 20)
+::sprMidiOverworld <- newSprite("res/gfx/midiO.png", 14, 20, 0, 0, 7, 17)
 ::sprMidiDoll <- newSprite("res/gfx/mididoll.png", 16, 16, 0, 0, 8, 14)
 
 //GUI
@@ -30,6 +35,7 @@
 ::sprEnergy <- newSprite("res/gfx/energy.png" 16, 16, 0, 0, 0, 0)
 ::sprLevels <- newSprite("res/gfx/levelicons.png", 16, 16, 0, 0, 8, 8)
 ::sprSubItem <- newSprite("res/gfx/itemcard.png", 20, 20, 0, 0, 10, 10)
+::sprWarning <- newSprite("res/gfx/warning.png", 280, 72, 0, 0, 140, 36)
 
 //Blocks
 ::sprVoid <- newSprite("res/gfx/void.png", 16, 32, 0, 0, 0, 0)
@@ -37,8 +43,8 @@
 ::sprBoxItem <- newSprite("res/gfx/itembox.png", 16, 16, 0, 0, 0, 0)
 ::sprBoxRed <- newSprite("res/gfx/redbox.png", 16, 16, 0, 0, 0, 0)
 ::sprBoxEmpty <- newSprite("res/gfx/emptybox.png", 16, 16, 0, 0, 0, 0)
-::sprSpring <- newSprite("res/gfx/spring.png", 16, 16, 0, 0, 0, 0)
-::sprSpringD <- newSprite("res/gfx/springd.png", 16, 16, 0, 0, 0, 0)
+::sprSpring <- newSprite("res/gfx/spring.png", 16, 16, 0, 0, 8, 8)
+::sprSpringD <- newSprite("res/gfx/springd.png", 16, 16, 0, 0, 8, 8)
 ::sprWoodBox <- newSprite("res/gfx/woodbox.png", 16, 16, 0, 0, 0, 0)
 ::sprIceBlock <- newSprite("res/gfx/iceblock.png", 16, 16, 0, 0, 0, 0)
 ::sprWoodChunks <- newSprite("res/gfx/woodchunks.png", 8, 8, 0, 0, 4, 4)
@@ -62,6 +68,7 @@
 ::sprGnu <- newSprite("res/gfx/gnu.png", 29, 45, 0, 0, 15, 45)
 ::sprSam <- newSprite("res/gfx/sam.png", 12, 32, 0, 0, 6, 32)
 ::sprTuckles <- newSprite("res/gfx/tuckles.png", 18, 34, 0, 0, 8, 34)
+::sprGaruda <- newSprite("res/gfx/garuda.png", 35, 36, 0, 0, 17, 36)
 
 //Enemies
 ::sprSnake <- newSprite("res/gfx/snake.png", 16, 32, 0, 0, 8, 0)
@@ -82,6 +89,10 @@
 ::sprIcicle <- newSprite("res/gfx/icicle.png", 10, 16, 0, 0, 5, 4)
 ::sprBounceCap <- newSprite("res/gfx/bouncecap.png", 16, 16, 0, 0, 8, 8)
 ::sprFlyAmanita <- newSprite("res/gfx/flyamanita.png", 20, 20, 0, 0, 10, 10)
+::sprJumpy <- newSprite("res/gfx/bouncecap.png", 16, 16, 0, 0, 8, 8)
+::sprDarkStar <- newSprite("res/gfx/darknyan.png", 16, 16, 0, 0, 8, 8)
+::sprHaywire <- newSprite("res/gfx/haywire.png", 16, 16, 0, 0, 8, 8)
+::sprSawblade <- newSprite("res/gfx/sawblade.png", 16, 16, 0, 0, 8, 8)
 
 //Items
 ::sprMuffin <- newSprite("res/gfx/muffin.png", 16, 16, 0, 0, 8, 8)
@@ -92,6 +103,7 @@
 ::sprAirFeather <- newSprite("res/gfx/airfeather.png", 16, 16, 0, 0, 8, 8)
 ::sprFlyRefresh <- newSprite("res/gfx/featherspin.png", 16, 16, 0, 0, 8, 8)
 ::sprEarthShell <- newSprite("res/gfx/earthshell.png", 16, 16, 0, 0, 8, 8)
+::sprBerry <- newSprite("res/gfx/strawberry.png", 10, 12, 0, 0, 5, 6)
 
 //Effects
 ::sprSpark <- newSprite("res/gfx/spark.png", 12, 16, 0, 0, 6, 8)
@@ -113,12 +125,14 @@
 ::sprExplodeT <- newSprite("res/gfx/explodeT.png", 32, 32, 0, 0, 16, 16)
 ::sprWaterSurface <- newSprite("res/gfx/watersurface.png" 16, 4, 0, 0, 0, 0)
 ::sprHeal <- newSprite("res/gfx/heal.png", 7, 7, 0, 0, 3, 3)
+::sprSplash <- newSprite("res/gfx/splash.png", 21, 17, 0, 0, 12, 16)
 
 //Backgrounds
 ::bgPause <- 0
 ::bgCaveHoles <- newSprite("res/gfx/rockgapsBG.png", 400, 392, 0, 0, 0, 0)
 ::bgIridia <- newSprite("res/gfx/iridia.png", 100, 56, 0, 0, 0, 0)
 ::bgAurora <- newSprite("res/gfx/aurora.png", 720, 240, 0, 0, 0, 0)
+::bgAuroraNight <- newSprite("res/gfx/aurora-night.png", 720, 240, 0, 0, 0, 0)
 ::bgRiverCity <- newSprite("res/gfx/rivercity.png", 380, 240, 0, 0, 0, 0)
 ::bgOcean <- newSprite("res/gfx/ocean.png", 480, 240, 0, 0, 0, 0)
 ::bgForest0 <- newSprite("res/gfx/forest0.png", 128, 180, 0, 0, 0, 0)
@@ -129,11 +143,14 @@
 ::bgCastle <- newSprite("res/gfx/castlebg.png", 320, 240, 0, 0, 0, 0)
 ::bgSnowPlain <- newSprite("res/gfx/bgSnowPlain.png", 720, 240, 0, 0, 0, 0)
 ::bgSnowNight <- newSprite("res/gfx/bgSnowNight.png", 800, 240, 0, 0, 0, 0)
-::bgIceForest <- newSprite("res/gfx/iceforest.png", 320, 240, 0, 0, 0, 0)
+::bgIceForest <- newSprite("res/gfx/iceforest.png", 640, 240, 0, 0, 0, 0)
 ::bgIceForest0 <- newSprite("res/gfx/iceforest0.png", 800, 320, 0, 0, 0, 0)
 ::bgIceForest1 <- newSprite("res/gfx/iceforest1.png", 640, 256, 0, 0, 0, 0)
 ::bgIceForest2 <- newSprite("res/gfx/iceforest2.png", 480, 192, 0, 0, 0, 0)
 
+//Weather
+::weRain <- newSprite("res/gfx/rainfall.png", 64, 64, 0, 0, 0, 0)
+::weSnow <- newSprite("res/gfx/snowfall.png", 64, 64, 0, 0, 0, 0)
 
 //Sounds
 ::sndFireball <- loadSound("res/snd/fireball.ogg")
@@ -156,6 +173,9 @@
 ::sndIcicle <- loadSound("res/snd/icicle.ogg")
 ::sndIceBreak <- loadSound("res/snd/icebreak.ogg")
 ::snd1up <- loadSound("res/snd/1up.ogg")
+::sndWallkick <- loadSound("res/snd/wallkick.ogg")
+::sndWarning <- loadSound("res/snd/warning.ogg")
+::sndGulp <- loadSound("res/snd/gulp.ogg")
 
 //Music
 ::gvMusic <- 0 //Stores the current music so that not too many large songs are loaded at once

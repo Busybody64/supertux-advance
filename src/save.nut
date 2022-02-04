@@ -31,7 +31,7 @@
 
 	for(local i = 0; i < dir.len(); i++) {
 		local f = ""
-		if(dir[i] != "." && i != ".." && dir[i] != "delete.me" && dir[i].find(".json") == dir[i].len() - 5) f = dir[i].slice(0, -5)
+		if(dir[i] != "." && i != ".." && dir[i] != "delete.me" && dir[i].find(".json") == dir[i].len() - 5 && canint(dir[i])) f = dir[i].slice(0, -5)
 		else continue
 		local o = {}
 		o.name <- function() { return "File " + f }
@@ -42,6 +42,7 @@
 	meLoadGame.push({
 		name = function() { return "Cancel" }
 		func = function() { cursor = 0; menu = meMain }
+		back = function() { cursor = 0; menu = meMain }
 	})
 
 	menu = meLoadGame

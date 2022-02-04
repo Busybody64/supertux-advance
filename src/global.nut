@@ -36,7 +36,8 @@
 		false
 	] //Color blocks activated by respective switches
 	characters = { //List of unlocked characters
-		Tux = [sprTuxOverworld, sprTuxDoll]
+		Tux = ["sprTuxOverworld", "sprTuxDoll", "sprTux", [40, 41]]
+		//Konqi = ["sprKonqiOverworld", "sprKonqiDoll", "sprKonqi", [8, 9]]
 	}
 	friends = {} //List of rescued friend characters
 	playerchar = "Tux" //Current player character
@@ -47,9 +48,11 @@
 	check = false //If a checkpoint has been activated
 	chx = 0
 	chy = 0
+	berries = 0
+	path = "res/map/"
 }
 ::gameDefault <- clone(game)
-::gvPlayer <- 0; //Pointer to player actor
+::gvPlayer <- false; //Pointer to player actor
 /*\
  # When characters are unlocked, they will
  # be added to game.characters. Mods can
@@ -84,16 +87,22 @@
 	}
 	playerchar = 0
 	lang = "en"
-	showigt = false
+	showleveligt = false
+	showglobaligt = false
 }
 
 ::gvScreen <- 0
+::gvPlayScreen <- 0
 ::camx <- 0
 ::camy <- 0
+::camxprev <- 0
+::camyprev <- 0
 
 //Debug variabls
 ::gvFPS <- 0
 
+//Misc
 ::gvWeather <- 0
 ::gvIGT <- 0 //In-game time for the current level
 ::gvDoIGT <- true
+::gvWarning <- 360.0
