@@ -3,7 +3,7 @@
 |                                 |
 |  SUPER TUX ADVANCE              |
 |                                 |
-|  LICENSE: GPL v3.0              |
+|  LICENSE: AGPL                  |
 |  AUTHOR: Kelvin Shadewing       |
 |  DESC: A 16-bit game featuring  |
 |    Tux the penguin.             |
@@ -46,6 +46,8 @@ donut("src/save.nut")
 donut("src/zlist.nut")
 donut("src/pickchar.nut")
 donut("src/weather.nut")
+donut("src/light.nut")
+donut("src/credits.nut")
 
 //Load mods
 local modlist = lsdir("mods")
@@ -89,6 +91,8 @@ switch(reschoice) {
 gvScreen = newTexture(screenW(), screenH())
 gvPlayScreen = newTexture(screenW(), screenH())
 bgPause = newTexture(screenW(), screenH())
+gvLightScreen = newTexture(screenW(), screenH())
+textureSetBlendMode(gvLightScreen, bm_sub)
 
 //Set up window
 setWindowTitle("SuperTux Advance")
@@ -112,6 +116,7 @@ strDifficulty = [
 	gvLangObj["difficulty-levels"]["super"]
 ]
 
+print("Launching SuperTux Advance v." + gvVersion + "...")
 startMain()
 menu = meMain
 config.playerchar = "Tux"

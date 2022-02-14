@@ -233,3 +233,41 @@
 }
 
 ::sinkLevel <- function(rate) { newActor(LevelSinker,0, 0, rate) }
+
+::FireChain <- class extends Actor {
+	r = 0
+	a = 0.0
+	s = 0.0
+	hb = null
+
+	constructor(_x, _y, _arr = null) {
+		base.constructor(_x, _y)
+		r = _arr[0].tointeger()
+		a = _arr[1].tofloat()
+		s = _arr[2].tofloat()
+		hb = []
+		if(r > 0) for(local i = 0; i < r; i++) {
+			hb.push(Cir(x, y, 2))
+		}
+	}
+
+	function run() {
+		//Rotate chain
+		a += s
+
+		if(r > 0) for(local i = 0; i < r; i++) {
+			hb[i].setPos(x + (i * 8) * cos((2 * pi) + (a / 60.0 - i * s / 60.0)), y + (i * 8) * sin((2 * pi) + (a / 60.0 - i * s / 60.0)))
+			drawSprite(sprFireball, getFrames() / 4, hb[i].x - camx, hb[i].y - camy)
+			if(gvPlayer) if(hitTest(hb[i], gvPlayer.shape)) {
+				gvPlayer.hurt = true
+			}
+			if(randInt(60) == 0) {
+				local c = actor[newActor(FlameTiny, hb[i].x, hb[i].y)]
+				c.vspeed = -0.25
+				c.hspeed = randFloat(0.5) - 0.25
+			}
+		}
+
+		if(debug) drawText(font, x - camx, y - camy, wrap(a, 0, 360).tostring())
+	}
+}

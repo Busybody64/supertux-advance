@@ -35,6 +35,10 @@
 								gvLangObj = mergeTable(gvLangObj, jsonRead(fileRead("contrib/" + contribFolder + "/text.json")))
 								print("Found text.json")
 							}
+							if(fileExists("contrib/" + contribFolder + "/script.nut")) if(!contribDidRun.rawin(contribFolder)) {
+								donut("contrib/" + contribFolder + "/script.nut")
+								contribDidRun[contribFolder] <- true
+							}
 							if(fileExists("save/" + contribFolder + ".json")) loadGame(contribFolder)
 							else startOverworld("contrib/" + contribFolder + "/" + contribWorldmap)
 						}
@@ -61,9 +65,9 @@
 
 	meContribLevels.push(
 		{
-			name = function() { return "Back" }
-			func = function(){ menu = meMain }
-			back = function(){ menu = meMain }
+			name = function() { return gvLangObj["menu-commons"]["back"] }
+			func = function() { menu = meMain; cursor = 2 }
+			back = function() { menu = meMain; cursor = 2 }
 		}
 	)
 

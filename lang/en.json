@@ -4,7 +4,12 @@
 		"load" : "Load Game",
 		"contrib-levels" : "Contrib Levels",
 		"options" : "Options",
+		"credits" : "Credits",
 		"quit" : "Quit Game"
+	},
+
+	"new-game-menu" : {
+		"file-exists" : "[FILE EXISTS]"
 	},
 
 	"contrib-menu" : {
@@ -22,6 +27,29 @@
 	"timers-menu" : {
 		"speedrun-timer-level" : "Level Speedrun Timer",
 		"speedrun-timer-global" : "Global Speedrun Timer"
+	},
+
+	"controls-menu" : {
+		"press-key-for" : "Press key for",
+		"press-button-for" : "Press button for",
+		"up" : "up",
+		"down" : "down",
+		"left" : "left",
+		"right" : "right",
+		"jump" : "jump",
+		"shoot" : "shoot",
+		"run" : "run",
+		"sneak" : "sneak",
+		"pause" : "pause",
+		"item-swap" : "item swap",
+		"menu-accept" : "menu accept"
+	},
+
+	"menu-commons" : {
+		"yes" : "Yes",
+		"no" : "No",
+		"back" : "Back",
+		"cancel" : "Cancel"
 	},
 
 	"bool" : {
@@ -77,7 +105,11 @@
 		"slidewarn" :
 		"Levels like this will force you to slide! (It's going to be replaced with something else in the future.)",
 		"konqi" :
-		"Konqi can breath fire and stomp the ground, but he isn't as fast as Tux."
+		"Konqi can breath fire and stomp the ground, but he isn't as fast as Tux.",
+		"momentum" :
+		"You won't lose speed if you keep running! Be sure to hold the run button or keep the stick pressed all the way over, and you'll keep whatever speed you gain from sliding. Icy hills will speed you up even if you can't slide.",
+		"warned" :
+		"You were warned..."
 	},
 
 	"devcom" : {
@@ -278,7 +310,7 @@
 		"0-6b" : "Branching Path",
 		"0-7" : "The Ocean Bridge",
 		"0-8" : "Artic Wind",
-		"0-9" : "Sunken Steps",
+		"0-9" : "Guarded Steps",
 		"0-x" : "Xtreme Hills",
 		"0-c" : "Fort Borealis",
 		"0-s" : "Red Switch Trial"

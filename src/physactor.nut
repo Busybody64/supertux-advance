@@ -25,7 +25,9 @@
 
 	function placeFree(_x, _y) {
 		//Save current location and move
-		local ns = Rec(_x + shape.ox, _y + shape.oy, shape.w, shape.h, shape.kind)
+		local ns
+		if(typeof shape == "Rec") ns = Rec(_x + shape.ox, _y + shape.oy, shape.w, shape.h, shape.kind)
+		if(typeof shape == "Cir") ns = Cir(_x + shape.ox, _y + shape.oy, shape.r)
 		local cx = floor(_x / 16)
 		local cy = floor(_y / 16)
 		local cw = ceil(shape.w / 16)
@@ -263,7 +265,9 @@
 						case 38: //One Way
 						case 50:
 						case 51:
-							local nps = Rec(shape.x + shape.ox, ns.y, ns.w, ns.h, shape.kind)
+							local nps
+							if(typeof shape == "Rec") nps = Rec(shape.x + shape.ox, ns.y, ns.w, ns.h, shape.kind)
+							if(typeof shape == "Cir") nps = Cir(shape.x + shape.ox, ns.y, ns.r)
 							gvMap.shape.setPos(((cx + i) * 16) + 8, ((cy + j) * 16) + 4)
 							gvMap.shape.kind = 0
 							gvMap.shape.w = 8.0
@@ -289,7 +293,9 @@
 	}
 
 	function inWater(_x, _y) {
-		local ns = Rec(_x, _y, shape.w, shape.h, shape.kind)
+		local ns
+		if(typeof shape == "Rec") ns = Rec(_x + shape.ox, _y + shape.oy, shape.w, shape.h, shape.kind)
+		if(typeof shape == "Cir") ns = Cir(_x + shape.ox, _y + shape.oy, shape.r)
 
 		if(actor.rawin("Water")) {
 			foreach(i in actor["Water"]) {
@@ -302,7 +308,9 @@
 
 	function onHazard(_x, _y) {
 		//Save current location and move
-		local ns = Rec(_x + shape.ox, _y + shape.oy, shape.w, shape.h, shape.kind)
+		local ns
+		if(typeof shape == "Rec") ns = Rec(_x + shape.ox, _y + shape.oy, shape.w, shape.h, shape.kind)
+		if(typeof shape == "Cir") ns = Cir(_x + shape.ox, _y + shape.oy, shape.r)
 		local cx = floor(_x / 16)
 		local cy = floor(_y / 16)
 		local cw = ceil(shape.w / 16)
@@ -363,7 +371,9 @@
 
 	function onDeath(_x, _y) {
 		//Save current location and move
-		local ns = Rec(_x + shape.ox, _y + shape.oy, shape.w, shape.h, shape.kind)
+		local ns
+		if(typeof shape == "Rec") ns = Rec(_x + shape.ox, _y + shape.oy, shape.w, shape.h, shape.kind)
+		if(typeof shape == "Cir") ns = Cir(_x + shape.ox, _y + shape.oy, shape.r)
 		local cx = floor(_x / 16)
 		local cy = floor(_y / 16)
 		local cw = ceil(shape.w / 16)
@@ -400,7 +410,9 @@
 
 	function onPlatform() {
 		//Save current location and move
-		local ns = Rec(x + shape.ox, y + shape.oy + 2, shape.w, shape.h, shape.kind)
+		local ns
+		if(typeof shape == "Rec") ns = Rec(x + shape.ox, y + shape.oy + 2, shape.w, shape.h, shape.kind)
+		if(typeof shape == "Cir") ns = Cir(x + shape.ox, y + shape.oy + 2, shape.r)
 		local cx = floor(x / 16)
 		local cy = floor(y / 16) + 1
 
@@ -414,7 +426,7 @@
 				case 38:
 				case 50:
 				case 51:
-					gvMap.shape.setPos((cx * 16) + 8, (cy * 16) + 4)
+					gvMap.shape.setPos(x, y + 4)
 					gvMap.shape.kind = 0
 					gvMap.shape.w = 8.0
 					gvMap.shape.h = 4.0
@@ -440,7 +452,9 @@
 
 	function onIce() {
 		//Save current location and move
-		local ns = Rec(x + shape.ox, y + shape.oy + 2, shape.w, shape.h, shape.kind)
+		local ns
+		if(typeof shape == "Rec") ns = Rec(x + shape.ox, y + shape.oy + 2, shape.w, shape.h, shape.kind)
+		if(typeof shape == "Cir") ns = Cir(x + shape.ox, y + shape.oy + 2, shape.r)
 		local cx = floor(x / 16)
 		local cy = floor(y / 16) + 1
 
@@ -459,7 +473,8 @@
 				case 55:
 				case 56:
 				case 57:
-				case 58:
+				case 58:if(typeof shape == "Rec") ns = Rec(x, y, shape.w, shape.h, shape.kind)
+		if(typeof shape == "Cir") ns = Cir(x, y, shape.r)
 				case 59:
 					gvMap.shape.setPos((cx * 16) + 8, (cy * 16) + 4)
 					gvMap.shape.kind = 0
@@ -482,6 +497,7 @@
 	step = 0
 	reverse = false
 	dir = 0.0
+	moving = true
 
 	constructor(_x, _y, _arr = null) {
 		base.constructor(_x, _y, _arr)
@@ -496,35 +512,37 @@
 
 	function run() {
 		//Follow path
-		if(distance2(x, y, tx, ty) > speed) {
-			dir = pointAngle(x, y, tx, ty)
-			x += lendirX(speed, dir)
-			y += lendirY(speed, dir)
-		}
-		else {
-			x = tx
-			y = ty
-			//Update target
-			if(reverse) {
-				if(step - 1 < 0) {
-					reverse = false
-					step++
-				}
-				else step--
-				if(step < 0) step = 0
-				tx = path[step][0]
-				ty = path[step][1]
+		if(moving) {
+			if(distance2(x, y, tx, ty) > speed) {
+				dir = pointAngle(x, y, tx, ty)
+				x += lendirX(speed, dir)
+				y += lendirY(speed, dir)
 			}
 			else {
-				if(step + 1 < path.len()) step++
-				else if(loop) step = 0
-				else {
-					step--
-					reverse = true
+				x = tx
+				y = ty
+				//Update target
+				if(reverse) {
+					if(step - 1 < 0) {
+						reverse = false
+						step++
+					}
+					else step--
+					if(step < 0) step = 0
+					tx = path[step][0]
+					ty = path[step][1]
 				}
-				if(step < 0) step = 0
-				tx = path[step][0]
-				ty = path[step][1]
+				else {
+					if(step + 1 < path.len()) step++
+					else if(loop) step = 0
+					else {
+						step--
+						reverse = true
+					}
+					if(step < 0) step = 0
+					tx = path[step][0]
+					ty = path[step][1]
+				}
 			}
 		}
 	}

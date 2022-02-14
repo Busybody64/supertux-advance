@@ -32,6 +32,7 @@
 	slideframe = 0.0 //Because using just frame gets screwy for some reason
 	wasInWater = false
 	cooldown = 0
+	antigrav = 0
 
 	//Animations
 	anim = [] //Animation frame delimiters: [start, end, speed]
@@ -74,7 +75,10 @@
 		//Side checks
 		shapeSlide.setPos(x, y)
 		shapeStand.setPos(x, y)
-		if(shape == shapeStand && !placeFree(x, y)) shape = shapeSlide
+		if(shape == shapeStand && !placeFree(x, y)) {
+			shape = shapeSlide
+			if(anim == anStand || anim == anWalk || anim == anRun) anim = anCrawl
+		}
 		local freeDown = placeFree(x, y + 1)
 		local freeDown2 = placeFree(x, y + 2)
 		local freeLeft = placeFree(x - 1, y)
@@ -86,7 +90,7 @@
 		//times per frame.
 
 		//Recharge
-		if(firetime > 0 && game.weapon != 3) {
+		if(firetime > 0 && game.weapon != 3 && (game.weapon != 4 || anim != anSlide)) {
 			firetime--
 		}
 
@@ -231,7 +235,8 @@
 					frame += 0.25
 
 					if(floor(frame) > anim[1]) {
-						anim = anCrawl
+						if(game.weapon == 4 && getcon("shoot", "hold")) anim = anSlide
+						else anim = anCrawl
 						shape = shapeSlide
 					}
 					break
@@ -411,16 +416,22 @@
 							anim = anJumpU
 							frame = anim[0]
 						}
-						if(game.weapon != 3) playSoundChannel(sndJump, 0, 0)
-						else playSoundChannel(sndFlap, 0, 0)
+						if(game.weapon != 3) {
+							stopSound(sndJump)
+							playSound(sndJump, 0)
+						}
+						else {
+							stopSound(sndFlap)
+							playSound(sndFlap, 0)
+						}
 					}
-					else if(freeDown && anim != anClimb && !placeFree(x - 2, y) && anim != anWall && hspeed <= 0 && tileGetSolid(x - 8, y) != 40) {
+					else if(freeDown && anim != anClimb && !placeFree(x - 2, y) && anim != anWall && hspeed <= 0 && tileGetSolid(x - 12, y - 12) != 40 && tileGetSolid(x - 12, y + 12) != 40 && tileGetSolid(x - 12, y) != 40) {
 						flip = 0
 						anim = anWall
 						frame = anim[0]
 						playSound(sndWallkick, 0)
 					}
-					else if(freeDown && anim != anClimb && !placeFree(x + 2, y) && anim != anWall && hspeed >= 0 && tileGetSolid(x + 8, y) != 40) {
+					else if(freeDown && anim != anClimb && !placeFree(x + 2, y) && anim != anWall && hspeed >= 0 && tileGetSolid(x + 12, y - 12) != 40 && tileGetSolid(x + 12, y + 12) != 40 && tileGetSolid(x + 12, y) != 40) {
 						flip = 1
 						anim = anWall
 						frame = anim[0]
@@ -435,8 +446,14 @@
 							anim = anJumpU
 							frame = anim[0]
 						}
-						if(game.weapon != 3) playSoundChannel(sndJump, 0, 0)
-						else playSoundChannel(sndFlap, 0, 0)
+						if(game.weapon != 3) {
+							stopSound(sndJump)
+							playSound(sndJump, 0)
+						}
+						else {
+							stopSound(sndFlap)
+							playSound(sndFlap, 0)
+						}
 						energy--
 					}
 				}
@@ -501,10 +518,10 @@
 					if(hspeed < 0) hspeed += friction / 3.0
 				} else {
 					if(hspeed > 0) {
-						if(!getcon("right", "hold") || anim == anCrawl) hspeed -= friction
+						if(!(mspeed > 2 && getcon("right", "hold")) || anim == anCrawl) hspeed -= friction
 					}
 					if(hspeed < 0) {
-						if(!getcon("left", "hold") || anim == anCrawl) hspeed += friction
+						if(!(mspeed > 2 && getcon("left", "hold")) || anim == anCrawl) hspeed += friction
 					}
 				}
 			}
@@ -514,7 +531,8 @@
 			}
 
 			if(abs(hspeed) < friction) hspeed = 0.0
-			if(placeFree(x, y + 2) && (vspeed < 2 || (vspeed < 5 && (game.weapon != 3 || getcon("down", "hold") || (anim == anStomp && vspeed < 8)) && !nowInWater))) vspeed += gravity
+			if(placeFree(x, y + 2) && (vspeed < 2 || (vspeed < 5 && (game.weapon != 3 || getcon("down", "hold")) && !nowInWater) || (anim == anStomp && vspeed < 8)) && antigrav <= 0) vspeed += gravity
+			else if(antigrav > 0) antigrav--
 			if(!freeUp && vspeed < 0) vspeed = 0.0 //If Konqi bumped his head
 
 			//Entering water
@@ -632,10 +650,12 @@
 				if(flip == 0) {
 					c.hspeed = 1.0 + randFloat(0.5)
 					c.x += 8
+					if(game.weapon == 2) c.hspeed += 1.8
 				}
 				else {
 					c.hspeed = -1.5 - randFloat(0.5)
 					c.x -= 8
+					if(game.weapon == 2) c.hspeed -= 1.8
 				}
 				if(vspeed > 0) c.vspeed = (-cooldown.tofloat() + 53.0) / 8.0
 				else c.vspeed = (cooldown.tofloat() - 53.0) / 8.0
@@ -835,7 +855,7 @@
 			if(x > gvMap.w - 4) x = gvMap.w - 4
 		} else x = wrap(x, 0, gvMap.w)
 
-		if(anim == anSlide) shape = shapeSlide
+		if(anim == anSlide || anim == anCrawl) shape = shapeSlide
 		else shape = shapeStand
 		shapeStand.setPos(x, y)
 		shapeSlide.setPos(x, y)
@@ -846,7 +866,7 @@
 		if(y < -100) y = -100.0
 
 		//Set ice friction
-		if(onIce()) friction = 0.05
+		if(onIce()) friction = 0.01
 		else friction = 0.1
 
 		//Hurt
@@ -857,12 +877,20 @@
 			hurt = false
 			if(blinking == 0) {
 				blinking = 120
-				anim = anHurt
-				frame = anim[0]
-				if(game.health > 0) game.health--
 				playSound(sndHurt, 0)
-				if(flip == 0) hspeed = -2.0
-				else hspeed = 2.0
+				if(game.weapon == 4 && anim == anSlide && energy > 0) {
+					blinking = 60
+					energy--
+					firetime = 120
+					newActor(Spark, x, y)
+				}
+				else {
+					if(game.health > 0) game.health--
+					if(flip == 0) hspeed = -2.0
+					else hspeed = 2.0
+					anim = anHurt
+					frame = anim[0]
+				}
 			}
 		}
 		else hurt = false
@@ -1057,4 +1085,6 @@
 				break
 		}
 	}
+
+	function _typeof() { return "DeadPlayer" }
 }

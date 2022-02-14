@@ -1,5 +1,5 @@
 ::meLanguage <- [
-	
+
 ]
 ::languageList <- null
 ::selectLanguage <- function() {
@@ -23,9 +23,10 @@
 	}
 	meLanguage.push(
 		{
-			languageIndex = languageList["languages"].len(),
-			name = function() { return "Back" },
-			func = function() { cursor = 0; menu = meOptions }
+			languageIndex = languageList["languages"].len()
+			name = function() { return gvLangObj["menu-commons"]["back"] }
+			func = function() { cursor = 2; menu = meOptions }
+			back = function() { cursor = 2; menu = meOptions }
 		}
 	)
 	menu = meLanguage

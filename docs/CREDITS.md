@@ -6,9 +6,9 @@
 
 [mrkubax10](https://github.com/mrkubax10) - Language menu
 
-[FrostC](https://www.youtube.com/channel/UCy9RpAf9M8icNBRXf3S6rmw) - Jumpy, Darknyan
+[FrostC](https://www.youtube.com/channel/UCy9RpAf9M8icNBRXf3S6rmw) - Jumpy, Darknyan, Livewire, Blazeborn
 
-## Graphics and Sounds
+## Graphics
 
 [Kelvin Shadewing](http://kelvinshadewing.net) - Tux, Cannon Bob, Igloo edits, Mama Bear, pipe tiles, pipe snake, muffin, deathcap, star nyan, heart, fonts, item blocks, debug graphics, elemental explosions
 
@@ -18,15 +18,9 @@
 
 [thekingphoenix](https://opengameart.org/content/tileset-platform-forest) - Forest Decorations
 
-[SuperTux](https://github.com/supertux/supertux) - Sounds (shoot, jump, hurt, slide, coin, trampoline)
-
 [Nemysis](https://opengameart.org/users/nemisys) - Sign post
 
 [devnewton](https://opengameart.org/users/devnewton) - Cloud tiles
-
-[Little Robot Sound Factory](https://opengameart.org/content/8-bit-sound-effects-library) - Misc sounds
-
-[Subspace Audio](https://opengameart.org/content/512-sound-effects-8-bit-style) - Misc sounds
 
 [TheNess](https://opengameart.org/users/theness) - Forest parallax
 
@@ -50,7 +44,7 @@
 
 [Spring](https://opengameart.org/users/spring-spring) - Large flame
 
-[FrostC](https://www.youtube.com/channel/UCy9RpAf9M8icNBRXf3S6rmw) - Toxic muffin, strawberry muffin, bomb muffin, Haywire, Tux doll, Orange, Darknyan
+[FrostC](https://www.youtube.com/channel/UCy9RpAf9M8icNBRXf3S6rmw) - Toxic muffin, strawberry muffin, bomb muffin, Haywire, Tux doll, Orange, Darknyan, Livewire, Blazeborn
 
 [TheCheeseWeez]() - Mega muffin
 
@@ -72,15 +66,23 @@ UbuntuJackson - UFO
 
 ## Sounds
 
+[SuperTux](https://github.com/supertux/supertux) - Sounds (shoot, jump, hurt, slide, coin, trampoline)
+
 [XSSheep](https://www.minecraftforum.net/forums/mapping-and-modding-java-edition/resource-packs/1242533-pixel-perfection-now-with-polar-bears-1-11) - 1up
+
+[Little Robot Sound Factory](https://opengameart.org/content/8-bit-sound-effects-library) - Misc sounds
+
+[Subspace Audio](https://opengameart.org/content/512-sound-effects-8-bit-style) - Misc sounds
 
 ## Music
 
 [Automusic](https://www.youtube.com/watch?v=xPxCaCN_dCQ) - Main Theme
 
+[SubspaceAudio](https://opengameart.org/content/5-chiptunes-action) - "Retro" themes
+
 Lukas Nystrand - Chippdisko
 
-[TAD](https://opengameart.org/users/tad) - LoFi Ice Cave
+[TAD](https://opengameart.org/users/tad) - LoFi Ice Cave, LoFi Ice Village
 
 [Trex0n](https://opengameart.org/users/trex0n) - Peace At Last (Overworld)
 
@@ -90,13 +92,11 @@ Lukas Nystrand - Chippdisko
 
 [genaralskar](https://opengameart.org/users/genaralskar) - Winter Wonderland
 
-[Eric Matyas](https://soundimage.org) - Spooky Enchantment
+[Eric Matyas](https://soundimage.org) - Spooky Enchantment, Puzzle Game 2
 
 [wipics](https://opengameart.org/users/wipics) - Spooky Loop
 
 [Alex McCulloch](https://opengameart.org/users/pro-sensory) - Halloween
-
-[Eric Matyas](https://soundimage.org/) - Puzzle Game 2
 
 ## Level Contributors
 

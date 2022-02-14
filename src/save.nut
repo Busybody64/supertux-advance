@@ -40,9 +40,9 @@
 	}
 
 	meLoadGame.push({
-		name = function() { return "Cancel" }
-		func = function() { cursor = 0; menu = meMain }
-		back = function() { cursor = 0; menu = meMain }
+		name = function() { return gvLangObj["menu-commons"]["cancel"] }
+		func = function() { cursor = 1; menu = meMain }
+		back = function() { cursor = 1; menu = meMain }
 	})
 
 	menu = meLoadGame

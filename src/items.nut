@@ -37,8 +37,8 @@
 		if(gvPlayer) if(distance2(x, y, gvPlayer.x, gvPlayer.y + 2) <= 16) {
 			deleteActor(id)
 			game.berries++
-			stopSound(1)
-			playSoundChannel(sndGulp, 0, 1)
+			stopSound(sndGulp)
+			playSound(sndGulp, 0)
 		}
 	}
 
@@ -510,4 +510,95 @@
 	}
 
 	function _typeof() { return "EarthShell" }
+}
+
+::SpecialBall <- class extends Actor {
+
+}
+
+::CoinRing <- class extends Actor {
+	r = 0.0 //Radius
+	c = 0.0 //Count
+	s = 0.0 //Speed
+	a = 0.0 //Angle
+	l = null //List
+
+	constructor(_x, _y, _arr = null) {
+		x = _x
+		y = _y
+		base.constructor(_x, _y)
+		r = _arr[0].tofloat()
+		c = _arr[1].tointeger()
+		s = _arr[2].tofloat()
+		l = []
+		for(local i = 0; i < c; i++) {
+			l.push(newActor(Coin, x, y))
+		}
+	}
+
+	function run() {
+		local cl = c //Coins left
+		a += s / 60.0
+		for(local i = 0; i < c; i++) {
+			if(checkActor(l[i])) {
+				actor[l[i]].x = x + r * cos((i * 2 * pi / c) + a)
+				actor[l[i]].y = y + r * sin((i * 2 * pi / c) + a)
+			}
+			else cl--
+		}
+		if(cl == 0) deleteActor(id)
+	}
+}
+
+::MagicKey <- class extends Actor {
+	color = 0
+
+	constructor(_x, _y, _arr = null) {
+		base.constructor(_x, _y)
+		if(_arr != null) color = _arr.tointeger()
+	}
+
+	function run() {
+		//Pickup
+		if(gvPlayer) if(distance2(x, y, gvPlayer.x, gvPlayer.y) <= 16) {
+			deleteActor(id)
+			switch(color) {
+				case 0:
+					gvKeyCopper = true
+					break
+				case 1:
+					gvKeySilver = true
+					break
+				case 2:
+					gvKeyGold = true
+					break
+				case 3:
+					gvKeyMythril = true
+					break
+				default:
+					gvKeyCopper = true
+					break
+			}
+			playSound(snd1up, 0)
+		}
+
+		//Draw
+		switch(color) {
+			case 0:
+				drawSprite(sprKeyCopper, getFrames() / 8, x - camx, y - camy)
+				break
+			case 1:
+				drawSprite(sprKeySilver, getFrames() / 8, x - camx, y - camy)
+				break
+			case 2:
+				drawSprite(sprKeyGold, getFrames() / 8, x - camx, y - camy)
+				break
+			case 3:
+				drawSprite(sprKeyMythril, getFrames() / 8, x - camx, y - camy)
+				break
+			default:
+				drawSprite(sprKeyCopper, getFrames() / 8, x - camx, y - camy)
+				break
+		}
+	}
 }

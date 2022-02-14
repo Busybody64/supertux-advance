@@ -2,6 +2,7 @@
 | GLOBAL VARIABLES |
 \*================*/
 
+::gvVersion <- "0.0.1"
 ::gvMap <- 0
 ::gvGameMode <- 0
 ::gvQuit <- false
@@ -91,6 +92,8 @@
 	showglobaligt = false
 }
 
+::contribDidRun <- {}
+
 ::gvScreen <- 0
 ::gvPlayScreen <- 0
 ::camx <- 0
@@ -106,3 +109,10 @@
 ::gvIGT <- 0 //In-game time for the current level
 ::gvDoIGT <- true
 ::gvWarning <- 360.0
+::gvCamTarget <- false
+
+//Temporary items
+::gvKeyCopper <- false
+::gvKeySilver <- false
+::gvKeyGold <- false
+::gvKeyMythril <- false

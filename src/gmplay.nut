@@ -27,6 +27,14 @@
 		right = false
 	}
 
+	//Reset keys
+	if(!game.check) {
+		gvKeyCopper = false
+		gvKeySilver = false
+		gvKeyGold = false
+		gvKeyMythril = false
+	}
+
 	//Load map to play
 	if(gvMap != 0) gvMap.del()
 	gvMap = Tilemap(level)
@@ -78,10 +86,17 @@
 			{
 				case 0:
 					//newActor(Tux, i.x, i.y - 16)
+					local c
 					if(!gvPlayer && getroottable().rawin(game.playerchar)) {
-						if(game.check == false) newActor(getroottable()[game.playerchar], i.x + 8, i.y - 16)
-						else newActor(getroottable()[game.playerchar], game.chx, game.chy)
+						if(game.check == false) {
+							c = actor[newActor(getroottable()[game.playerchar], i.x + 8, i.y - 16)]
+						}
+						else {
+							c = actor[newActor(getroottable()[game.playerchar], game.chx, game.chy)]
+						}
 					}
+					camx = c.x - (screenW() / 2)
+					camy = c.y - (screenH() / 2)
 					break
 
 				case 1:
@@ -292,7 +307,19 @@
 					break
 
 				case 48:
-					newActor(ColorSwitch, i.x, i.y - 16, 0)
+					newActor(MagicKey, i.x, i.y - 16, 0)
+					break
+
+				case 49:
+					newActor(MagicKey, i.x, i.y - 16, 1)
+					break
+
+				case 50:
+					newActor(MagicKey, i.x, i.y - 16, 2)
+					break
+
+				case 51:
+					newActor(MagicKey, i.x, i.y - 16, 3)
 					break
 
 				case 56:
@@ -306,12 +333,21 @@
 					arg.remove(0)
 					if(arg.len() == 1) arg = arg[0]
 					else if(arg.len() == 0) arg = null
-					print(n)
 					if(getroottable().rawin(n)) if(typeof getroottable()[n] == "class") newActor(getroottable()[n], i.x + 8, i.y - 8, arg)
 					break
 
 				case 65:
 					newActor(Haywire, i.x + 8, i.y - 8)
+					game.enemies++
+					break
+
+				case 66:
+					newActor(Livewire, i.x + 8, i.y - 8)
+					game.enemies++
+					break
+
+				case 67:
+					newActor(Blazeborn, i.x + 8, i.y - 8)
 					game.enemies++
 					break
 
@@ -389,7 +425,6 @@
 	autocon.down = false
 	autocon.left = false
 	autocon.right = false
-	if(game.lives == 0) game.check = false
 
 	//Execute level code
 	print("Running level code...")
@@ -403,15 +438,36 @@
 
 ::gmPlay <- function()
 {
+	if(gvCamTarget == null && gvPlayer) gvCamTarget = gvPlayer
 	local px = 0
 	local py = 0
 	local ux = gvMap.w - screenW()
 	local uy = gvMap.h - screenH()
 
-	if(gvPlayer)
+	if(gvCamTarget != null && gvCamTarget != false)
 	{
-		px = (gvPlayer.x + gvPlayer.hspeed * 32) - (screenW() / 2)
-		py = (gvPlayer.y + gvPlayer.vspeed * 2) - (screenH() / 2)
+		if(gvPlayer) {
+			if(gvCamTarget == gvPlayer) {
+				px = (gvCamTarget.x + gvPlayer.hspeed * 32) - (screenW() / 2)
+				py = (gvCamTarget.y + gvPlayer.vspeed * 2) - (screenH() / 2)
+			}
+			else {
+				local pw = max(screenW(), 320)
+				local ph = max(screenH(), 240)
+				local ptx = (gvCamTarget.x) - (screenW() / 2)
+				local pty = (gvCamTarget.y) - (screenH() / 2)
+
+				if(gvCamTarget.rawin("w")) if(abs(gvCamTarget.w) > pw / 2) ptx = (gvPlayer.x + gvPlayer.hspeed * 32) - (screenW() / 2)
+				if(gvCamTarget.rawin("h")) if(abs(gvCamTarget.h) > ph / 2) pty = (gvPlayer.y + gvPlayer.vspeed * 2) - (screenH() / 2)
+
+				px = ptx
+				py = pty
+			}
+		}
+		else {
+			px = (gvCamTarget.x) - (screenW() / 2)
+			py = (gvCamTarget.y) - (screenH() / 2)
+		}
 	} else {
 		px = camx
 		py = camy
@@ -425,8 +481,13 @@
 	if(camy > uy) camy = uy
 	if(camy < 0) camy = 0
 
+	if(gvPlayer) gvCamTarget = gvPlayer
+
 	//Draw
 	//Separate texture for game world allows post-processing effects without including HUD
+	setDrawTarget(gvLightScreen)
+	setDrawColor(gvLight)
+	drawRec(0, 0, screenW(), screenH(), true)
 	setDrawTarget(gvPlayScreen)
 
 	if(drawBG != 0) drawBG()
@@ -444,6 +505,7 @@
 	if(actor.rawin("Water")) foreach(i in actor["Water"]) { i.draw() }
 	gvMap.drawTiles(floor(-camx), floor(-camy), floor(camx / 16) - 3, floor(camy / 16), 24, 20, "fg")
 	if(actor.rawin("SecretWall")) foreach(i in actor["SecretWall"]) { i.draw() }
+	drawImage(gvLightScreen, 0, 0)
 	if(debug) gvMap.drawTiles(floor(-camx), floor(-camy), floor(camx / 16), floor(camy / 16), 21, 17, "solid")
 
 	//HUDs
@@ -513,12 +575,18 @@
 		//Draw warning sign
 		if(gvWarning < 180) {
 			if(gvWarning == 0 || gvWarning == 90) {
-				stopSound(4)
+				stopChannel(4)
 				playSoundChannel(sndWarning, 0, 4)
 			}
 			drawSpriteEx(sprWarning, 0, screenW() / 2, screenH() / 2, 0, 0, 1, 1, abs(sin(gvWarning / 30.0)))
 			gvWarning += 1.5
 		}
+
+		//Keys
+		if(gvKeyCopper) drawSprite(sprKeyCopper, 0, screenW() - 36, 16)
+		if(gvKeySilver) drawSprite(sprKeySilver, 0, screenW() - 50, 16)
+		if(gvKeyGold) drawSprite(sprKeyGold, 0, screenW() - 64, 16)
+		if(gvKeyMythril) drawSprite(sprKeyMythril, 0, screenW() - 78, 16)
 	}
 	else {
 		local ln = 3
@@ -548,7 +616,11 @@
 	//Handle berries
 	if(gvPlayer) if(game.berries == 64) {
 		game.berries = 0
-		newActor(Starnyan, gvPlayer.x, gvPlayer.y)
+		if(game.health < game.maxHealth) {
+			game.health++
+			playSound(sndHeal, 0)
+		}
+		else newActor(Starnyan, gvPlayer.x, gvPlayer.y)
 	}
 }
 

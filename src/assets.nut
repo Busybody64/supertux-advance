@@ -93,6 +93,8 @@
 ::sprDarkStar <- newSprite("res/gfx/darknyan.png", 16, 16, 0, 0, 8, 8)
 ::sprHaywire <- newSprite("res/gfx/haywire.png", 16, 16, 0, 0, 8, 8)
 ::sprSawblade <- newSprite("res/gfx/sawblade.png", 16, 16, 0, 0, 8, 8)
+::sprLivewire <- newSprite("res/gfx/Livewire.png", 16, 16, 0, 0, 8, 8)
+::sprBLZBRN <- newSprite("res/gfx/Blazeborn.png", 16, 16, 0, 0, 8, 9)
 
 //Items
 ::sprMuffin <- newSprite("res/gfx/muffin.png", 16, 16, 0, 0, 8, 8)
@@ -104,6 +106,10 @@
 ::sprFlyRefresh <- newSprite("res/gfx/featherspin.png", 16, 16, 0, 0, 8, 8)
 ::sprEarthShell <- newSprite("res/gfx/earthshell.png", 16, 16, 0, 0, 8, 8)
 ::sprBerry <- newSprite("res/gfx/strawberry.png", 10, 12, 0, 0, 5, 6)
+::sprKeyCopper <- newSprite("res/gfx/key-copper.png", 16, 16, 0, 0, 8, 8)
+::sprKeySilver <- newSprite("res/gfx/key-silver.png", 16, 16, 0, 0, 8, 8)
+::sprKeyGold <- newSprite("res/gfx/key-gold.png", 16, 16, 0, 0, 8, 8)
+::sprKeyMythril <- newSprite("res/gfx/key-mythril.png", 16, 16, 0, 0, 8, 8)
 
 //Effects
 ::sprSpark <- newSprite("res/gfx/spark.png", 12, 16, 0, 0, 6, 8)
@@ -193,6 +199,9 @@
 ::musSnowTown <- "res/snd/winter_wonderland.ogg"
 ::musAirship <- "res/snd/airship.ogg"
 ::musPuzzle <- "res/snd/puzzle.ogg"
+::musIceland <- "res/snd/iceland.ogg"
+::musretro2<- "res/snd/retro-2.ogg"
+
 
 //Saved separately so that it can be reused frequently
 ::musInvincible <- loadMusic("res/snd/invincible.ogg")

@@ -128,7 +128,7 @@
 		else drawSpriteEx(sprFlameTiny, floor(frame), x - camx, y - camy, angle, 0, 1, 1, 1)
 	}
 
-	function _typeof() { return "FlameBreath" }
+	function _typeof() { return "Fireball" }
 }
 
 ::IceBreath <- class extends PhysAct {
@@ -162,10 +162,10 @@
 	constructor(_x, _y, _arr = null) {
 		base.constructor(_x, _y)
 
-		stopSound(1)
-		playSoundChannel(sndExplodeF, 0, 1)
+		stopSound(sndExplodeF)
+		playSound(sndExplodeF, 0)
 
-		shape = Rec(x, y, 16, 16, 0)
+		shape = Cir(x, y, 16)
 	}
 
 	function run() {
@@ -194,8 +194,8 @@
 	constructor(_x, _y, _arr = null) {
 		base.constructor(_x, _y)
 
-		stopSound(1)
-		playSoundChannel(sndBump, 0, 1)
+		stopSound(sndBump)
+		playSound(sndBump, 0)
 
 		shape = Rec(x, y, 16, 16, 0)
 	}
@@ -217,8 +217,8 @@
 	constructor(_x, _y, _arr = null) {
 		base.constructor(_x, _y)
 
-		stopSound(1)
-		playSoundChannel(sndBump, 0, 0)
+		stopSound(sndBump)
+		playSound(sndBump, 0)
 
 		shape = Rec(x, y, 8, 8, 0)
 	}
@@ -241,7 +241,7 @@
 	constructor(_x, _y, _arr = null) {
 		base.constructor(_x, _y)
 
-		shape = Rec(x, y, 4, 4, 0)
+		shape = Cir(x, y, 4)
 	}
 
 	function run() {

@@ -51,7 +51,7 @@ const fontH = 14
 		menu[cursor].func()
 	}
 
-	if(getcon("pause", "press") && !(menu == mePausePlay || menu == mePauseOver || menu == meMain)) {
+	if(getcon("pause", "press")) {
 		for(local i = 0; i < menu.len(); i++) {
 				if(menu[i].rawin("back")) {
 					menu[i]["back"]()
@@ -80,10 +80,13 @@ const fontH = 14
 		name = function() { return gvLangObj["main-menu"]["options"] },
 		func = function() { cursor = 0; menu = meOptions }
 	},
+    	{
+		name = function() { return gvLangObj["main-menu"]["credits"] },
+		func = function() { cursor = 0; startCredits(); }
+    	}	
 	{
 		name = function() { return gvLangObj["main-menu"]["quit"] },
 		func = function() { gvQuit = 1 }
-		back = function() { gvQuit = 1 }
 	}
 ]
 
@@ -139,9 +142,9 @@ const fontH = 14
 		func = function() { cursor = 0; menu = meTimers }
 	},
 	{
-		name = function() { return "Back" },
-		func = function() { cursor = 0; menu = meMain; fileWrite("config.json", jsonWrite(config)) }
-		back = function() { cursor = 0; menu = meMain; fileWrite("config.json", jsonWrite(config)) }
+		name = function() { return gvLangObj["menu-commons"]["back"] },
+		func = function() { cursor = 3; menu = meMain; fileWrite("config.json", jsonWrite(config)) }
+		back = function() { cursor = 3; menu = meMain; fileWrite("config.json", jsonWrite(config)) }
 	}
 ]
 
@@ -155,9 +158,9 @@ const fontH = 14
 		func = function() { config.showglobaligt = !config.showglobaligt }
 	},
 	{
-		name = function() { return "Back" },
-		func = function() { cursor = 0; menu = meOptions }
-		back = function() { cursor = 0; menu = meOptions }
+		name = function() { return gvLangObj["menu-commons"]["back"] },
+		func = function() { cursor = 3; menu = meOptions }
+		back = function() { cursor = 3; menu = meOptions }
 	}
 ]
 
@@ -179,7 +182,7 @@ const fontH = 14
 		func = function() { game.difficulty = 3; cursor = 0; menu = meNewGame }
 	},
 	{
-		name = function() { return "Cancel" },
+		name = function() { return gvLangObj["menu-commons"]["cancel"] },
 		func = function() { cursor = 0; menu = meMain }
 		back = function() { cursor = 0; menu = meMain }
 	}
@@ -189,7 +192,7 @@ const fontH = 14
 	{
 		name = function() {
 			local m = "File 0"
-			if(fileExists("save/0.json")) m += " [FILE EXISTS]"
+			if(fileExists("save/0.json")) m += " " + gvLangObj["new-game-menu"]["file-exists"]
 			return m
 		},
 		func = function() {
@@ -202,7 +205,7 @@ const fontH = 14
 	{
 		name = function() {
 			local m = "File 1"
-			if(fileExists("save/1.json")) m += " [FILE EXISTS]"
+			if(fileExists("save/1.json")) m += " " + gvLangObj["new-game-menu"]["file-exists"]
 			return m
 		},
 		func = function() {
@@ -215,7 +218,7 @@ const fontH = 14
 	{
 		name = function() {
 			local m = "File 2"
-			if(fileExists("save/2.json")) m += " [FILE EXISTS]"
+			if(fileExists("save/2.json")) m += " " + gvLangObj["new-game-menu"]["file-exists"]
 			return m
 		},
 		func = function() {
@@ -228,7 +231,7 @@ const fontH = 14
 	{
 		name = function() {
 			local m = "File 3"
-			if(fileExists("save/3.json")) m += " [FILE EXISTS]"
+			if(fileExists("save/3.json")) m += " " + gvLangObj["new-game-menu"]["file-exists"]
 			return m
 		},
 		func = function() {
@@ -239,7 +242,7 @@ const fontH = 14
 		}
 	},
 	{
-		name = function() { return "Cancel" }
+		name = function() { return gvLangObj["menu-commons"]["cancel"] }
 		func = function() { cursor = 0; menu = meMain }
 		back = function() { cursor = 0; menu = meMain }
 	}
@@ -247,12 +250,12 @@ const fontH = 14
 
 ::meOverwrite <- [
 	{
-		name = function() { drawText(font2, screenW() / 2 - (15 * 4), screenH() / 2, "Overwrite save?"); return "No" }
+		name = function() { drawText(font2, screenW() / 2 - (15 * 4), screenH() / 2, "Overwrite save?"); return gvLangObj["menu-commons"]["no"] }
 		func = function() { menu = meNewGame; cursor = 0 }
 		back = function() { menu = meNewGame; cursor = 0 }
 	},
 	{
-		name = function() { return "Yes" }
+		name = function() { return gvLangObj["menu-commons"]["yes"] }
 		func = function() { newGame(game.file) }
 	}
 ]
