@@ -2,6 +2,8 @@
 // OVERWORLD //
 ///////////////
 
+::gvLevel <- ""
+
 ::OverPlayer <- class extends PhysAct {
 	//0 = right
 	//1 = up
@@ -201,17 +203,10 @@
 		x += hspeed
 		y += vspeed
 
-		if(hspeed == 0 && vspeed == 0) drawSprite(getroottable()[game.characters[game.playerchar][0]], 0, x - camx, y - camy)
-		else drawSprite(getroottable()[game.characters[game.playerchar][0]], getFrames() / 8, x - camx, y - camy)
+		if(hspeed == 0 && vspeed == 0) drawSprite(getroottable()[game.characters[game.playerChar][0]], 0, x - camx, y - camy)
+		else drawSprite(getroottable()[game.characters[game.playerChar][0]], getFrames() / 8, x - camx, y - camy)
 
-		if(level != "") {
-			drawText(font2, (screenW() / 2) - (gvLangObj["level"][level].len() * 4), 8, gvLangObj["level"][level])
-			if(game.besttime.rawin(level)) {
-				local pb = formatTime(game.besttime[level])
-				local pbx = (pb.len() / 2) * 8
-				drawText(font2, (screenW() / 2) - pbx, 24, pb)
-			}
-		}
+		gvLevel = level
 	}
 
 	function _typeof() { return "OverPlayer" }
@@ -233,9 +228,9 @@
 			else drawSprite(sprLevels, 0, x - camx, y - camy)
 		}
 
-		if(game.allcoins.rawin(level)) drawSprite(sprLevels, 2, x - camx, y - camy)
-		if(game.allenemies.rawin(level)) drawSprite(sprLevels, 3, x - camx, y - camy)
-		if(game.allsecrets.rawin(level)) drawSprite(sprLevels, 4, x - camx, y - camy)
+		if(game.allCoins.rawin(level)) drawSprite(sprLevels, 2, x - camx, y - camy)
+		if(game.allEnemies.rawin(level)) drawSprite(sprLevels, 3, x - camx, y - camy)
+		if(game.allSecrets.rawin(level)) drawSprite(sprLevels, 4, x - camx, y - camy)
 
 		//Selected
 		if(getcon("jump", "press") || getcon("accept", "press") || getcon("shoot", "press")) {
@@ -427,15 +422,28 @@
 	if(debug) gvMap.drawTiles(-camx, -camy, floor(camx / 16), floor(camy / 16), 21, 17, "solid")
 
 	//Actor types are explicitly called this way to ensure the player is drawn on top
+	//This was made before Z drawing was implemented, so it's not perfect
 	if(actor.rawin("StageIcon")) foreach(i in actor["StageIcon"]) i.run()
 	if(actor.rawin("WorldIcon")) foreach(i in actor["WorldIcon"]) i.run()
 	if(actor.rawin("TownIcon")) foreach(i in actor["TownIcon"]) i.run()
+	if(actor.rawin("Trigger")) foreach(i in actor["Trigger"]) i.run()
 	if(gvPlayer) gvPlayer.run()
+
+	runAmbientLight()
+	drawAmbientLight()
+
+	if(gvLevel != "") {
+		drawText(font2, (screenW() / 2) - (gvLangObj["level"][gvLevel].len() * 4), 8, gvLangObj["level"][gvLevel])
+		if(game.bestTime.rawin(gvLevel)) {
+			local pb = formatTime(game.bestTime[gvLevel])
+			local pbx = (pb.len() / 2) * 8
+			drawText(font2, (screenW() / 2) - pbx, 24, pb)
+		}
+	}
 
 	drawSprite(sprCoin, 0, 16, screenH() - 16)
 	drawText(font2, 24, screenH() - 23, game.coins.tostring())
-	drawSprite(getroottable()[game.characters[game.playerchar][1]], game.weapon, screenW() - 16, screenH() - 12)
-	drawText(font2, screenW() - 26 - (game.lives.tostring().len() * 8), screenH() - 23, game.lives.tostring())
+	drawSprite(getroottable()[game.characters[game.playerChar][1]], game.weapon, screenW() - 16, screenH() - 12)
 
 	drawDebug()
 

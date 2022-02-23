@@ -19,7 +19,7 @@
 		slideshape = Rec(x, y - 1, 16, 8, 0)
 
 		if(_arr != null && _arr != "") coins = _arr.tointeger()
-		game.maxcoins += coins
+		game.maxCoins += coins
 	}
 
 	function run() {
@@ -522,6 +522,10 @@
 			game.chx = x
 			game.chy = y
 			playSoundChannel(sndBell, 0, 4)
+			if(game.difficulty < 3) {
+				if(game.health < game.maxHealth) game.health++
+				else if(game.subitem == 0) game.subitem = 5
+			}
 		}
 
 		if(found) drawSprite(sprCheckBell, getFrames() / 8, x - camx, y - camy)
@@ -643,6 +647,7 @@
 
 	function run() {
 		drawSpriteZ(2, sprColorBlock, (color * 2) + filled, x - camx, y - camy)
+		if(color != null) if(game.colorswitch[color]) filltile()
 	}
 
 	function _typeof() { return "ColorBlock" }
@@ -732,7 +737,7 @@
 				deleteActor(id)
 				newActor(Poof, x, y)
 				playSound(sndBump, 0)
-				newActor(MuffinBomb, x, y - 8)
+				newActor(MuffinBomb, x, y - 16)
 			}
 
 		}
@@ -779,5 +784,85 @@
 			}
 		}
 	}
+}
 
+::LockBlock <- class extends Actor {
+	color = 0
+	oldsolid = 0
+
+	constructor(_x, _y, _arr = null) {
+		base.constructor(_x, _y)
+
+		if(_arr == null) color = 0
+		else color = _arr.tointeger()
+
+		oldsolid = tileGetSolid(x, y)
+		tileSetSolid(x, y, 1)
+	}
+
+	function run() {
+		drawSpriteZ(2, sprLockBlock, color, x - camx, y - camy)
+
+		if(gvPlayer) if(distance2(x, y, gvPlayer.x, gvPlayer.y) < 32) {
+			switch(color) {
+				case 0:
+					if(gvKeyCopper) {
+						tileSetSolid(x, y, oldsolid)
+						deleteActor(id)
+						newActor(Poof, x, y)
+						stopSound(sndBump)
+						playSound(sndBump, 0)
+					}
+					break
+				case 1:
+					if(gvKeySilver) {
+						tileSetSolid(x, y, oldsolid)
+						deleteActor(id)
+						newActor(Poof, x, y)
+						stopSound(sndBump)
+						playSound(sndBump, 0)
+					}
+					break
+				case 2:
+					if(gvKeyGold) {
+						tileSetSolid(x, y, oldsolid)
+						deleteActor(id)
+						newActor(Poof, x, y)
+						stopSound(sndBump)
+						playSound(sndBump, 0)
+					}
+					break
+				case 3:
+					if(gvKeyMythril) {
+						tileSetSolid(x, y, oldsolid)
+						deleteActor(id)
+						newActor(Poof, x, y)
+						stopSound(sndBump)
+						playSound(sndBump, 0)
+					}
+					break
+			}
+		}
+	}
+}
+
+::BossDoor <- class extends Actor {
+	dy = 0
+	moving = false
+
+	function run() {
+		if(gvWarning == 0 && dy == 0) {
+			moving = true
+			tileSetSolid(x, y, 1)
+			tileSetSolid(x, y - 16, 1)
+			tileSetSolid(x, y - 32, 1)
+			tileSetSolid(x, y - 48, 1)
+		}
+		if(moving && dy < 32) dy++
+
+		drawSpriteZ(4, sprBossDoor, 0, x - camx, y - camy - dy + 16)
+		drawSpriteZ(4, sprBossDoor, 0, x - camx, y - camy - 80 + dy)
+	}
+
+	function _typeof() { return "BossDoor" }
 }

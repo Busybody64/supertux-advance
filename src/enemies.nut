@@ -106,7 +106,7 @@
 		if(gvPlayer.blinking > 0) return
 		if(gvPlayer.x < x) gvPlayer.hspeed = -1.0
 		else gvPlayer.hspeed = 1.0
-		gvPlayer.hurt = true
+		gvPlayer.hurt = 1
 	}
 
 	function hurtfire() {} //If the object is hit by a fireball
@@ -684,10 +684,11 @@
 
 	function run() {
 		drawSpriteEx(sprExplodeF, frame, x - camx, y - camy, randInt(360), 0, 1, 1, 1)
+		drawLightEx(sprLightFire, 0, x - camx, y - camy, 0, 0, 0.75 - (frame / 10.0), 0.75 - (frame / 10.0))
 		frame += 0.2
 
 		if(gvPlayer) {
-			if(hitTest(shape, gvPlayer.shape)) gvPlayer.hurt = true
+			if(hitTest(shape, gvPlayer.shape)) gvPlayer.hurt = 1
 			if(floor(frame) <= 1 && distance2(x, y, gvPlayer.x, gvPlayer.y) < 64) {
 				if(x < gvPlayer.x) gvPlayer.hspeed += 0.5
 				if(x > gvPlayer.x) gvPlayer.hspeed -= 0.5
@@ -823,7 +824,7 @@
 			if(x > gvPlayer.x + 8 && frame > 0.5) frame -= 0.1
 			if(x < gvPlayer.x - 8 && frame < 4.5) frame += 0.1
 
-			if(distance2(x, y, gvPlayer.x, gvPlayer.y) <= 200 && timer == 0 && (frame < 1 || frame > 4)) {
+			if(distance2(x, y, gvPlayer.x, gvPlayer.y) <= 160 && timer == 0 && (frame < 1 || frame > 4)) {
 				if(frame < 1) {
 					local c = actor[newActor(CannonBob, x - 4, y - 4)]
 					c.hspeed = ((gvPlayer.x - x) / 48)
@@ -1202,6 +1203,7 @@
 			hspeed *= 0.99
 
 			drawSpriteEx(sprJellyFish, frame, x - camx, y - camy, 0, fliph + (flipv * 2), 1, 1, 1)
+			drawLightEx(sprLightIce, 0, x - camx, y - camy, 0, 0, 0.25, 0.25)
 
 			if(placeFree(x + hspeed, y)) x += hspeed
 			if(placeFree(x, y + vspeed)) y += vspeed
@@ -1320,7 +1322,7 @@
 
 		if(timer == 0 || !placeFree(x, y)) deleteActor(id)
 
-		if(gvPlayer) if(hitTest(shape, gvPlayer.shape)) gvPlayer.hurt = true
+		if(gvPlayer) if(hitTest(shape, gvPlayer.shape)) gvPlayer.hurt = 1
 
 		drawSprite(sprIceball, 0, x - camx, y - camy)
 		if(!inWater(x, y)) vspeed += 0.2
@@ -1491,6 +1493,7 @@
 	constructor(_x, _y, _arr = 0) {
 		base.constructor(_x, _y)
 		if(_arr == "") range = 0
+		else if(typeof _arr == "array") range = _arr[0].tointeger()
 		else range = _arr.tointeger() * 16
 		shape = Rec(x, y, 6, 6, 0)
 	}
@@ -1678,7 +1681,7 @@
 	}
 
 	function gethurt() {
-		gvPlayer.hurt = true
+		gvPlayer.hurt = 1
 	}
 
 	function hurtblast() {
@@ -1728,7 +1731,7 @@
 		shape.setPos(x, y)
 
 		if(gvPlayer) if(distance2(x, y, gvPlayer.x, gvPlayer.y) <= 16) {
-			gvPlayer.hurt = true
+			gvPlayer.hurt = 1
 		}
 
 		drawSprite(sprDarkStar, getFrames() / 10, x - camx, y - camy)
@@ -1962,9 +1965,10 @@
 	function run() {
 		base.run()
 		drawSprite(sprSawblade, getFrames() / 2, x - camx, y - camy)
+		drawLightEx(sprLightIce, 0, x - camx, y - camy, 0, 0, 0.125, 0.125)
 		//drawText(font, x - camx + 16, y - camy, dir.tostring())
 		shape.setPos(x, y)
-		if(gvPlayer) if(hitTest(shape, gvPlayer.shape)) gvPlayer.hurt = true
+		if(gvPlayer) if(hitTest(shape, gvPlayer.shape)) gvPlayer.hurt = 1
 	}
 }
 
@@ -1986,7 +1990,7 @@
 		frame += 0.1
 
 		if(gvPlayer) {
-			if(hitTest(shape, gvPlayer.shape)) gvPlayer.hurt = true
+			if(hitTest(shape, gvPlayer.shape)) gvPlayer.hurt = 1
 			if(floor(frame) <= 1 && distance2(x, y, gvPlayer.x, gvPlayer.y) < 64) {
 				if(x < gvPlayer.x) gvPlayer.hspeed += 0.1
 				if(x > gvPlayer.x) gvPlayer.hspeed -= 0.1

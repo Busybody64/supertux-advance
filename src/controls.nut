@@ -3,6 +3,8 @@
 	down = false
 	left = false
 	right = false
+	jump = false
+	shoot = false
 }
 
 ::getcon <- function(control, state) {
@@ -33,22 +35,22 @@
 
 	switch(control) {
 		case "up":
-			if(keyfunc(config.key.up) || hatfunc(0, js_up) || (state == "hold" && joyY(0) < -js_max / 10) || autocon.up) return true
+			if(keyfunc(config.key.up) || hatfunc(0, js_up) || (state == "hold" && joyY(0) < -js_max / 10)) return true
 			if(state == "press" && joyAxisPress(0, 1, js_max / 20) == -1) return true
 			if(state == "release" && joyAxisRelease(0, 1, js_max / 20) == -1) return true
 			break
 		case "down":
-			if(keyfunc(config.key.down) || hatfunc(0, js_down) || (state == "hold" && joyY(0) > js_max / 10) || autocon.down) return true
+			if(keyfunc(config.key.down) || hatfunc(0, js_down) || (state == "hold" && joyY(0) > js_max / 10)) return true
 			if(state == "press" && joyAxisPress(0, 1, js_max / 20) == 1) return true
 			if(state == "release" && joyAxisRelease(0, 1, js_max / 20) == 1) return true
 			break
 		case "left":
-			if(keyfunc(config.key.left) || hatfunc(0, js_left) || (state == "hold" && joyX(0) < -js_max / 10) || autocon.left) return true
+			if(keyfunc(config.key.left) || hatfunc(0, js_left) || (state == "hold" && joyX(0) < -js_max / 10)) return true
 			if(state == "press" && joyAxisPress(0, 0, js_max / 20) == -1) return true
 			if(state == "release" && joyAxisRelease(0, 0, js_max / 20) == -1) return true
 			break
 		case "right":
-			if(keyfunc(config.key.right) || hatfunc(0, js_right) || (state == "hold" && joyX(0) > js_max / 10) || autocon.right) return true
+			if(keyfunc(config.key.right) || hatfunc(0, js_right) || (state == "hold" && joyX(0) > js_max / 10)) return true
 			if(state == "press" && joyAxisPress(0, 0, js_max / 20) == 1) return true
 			if(state == "release" && joyAxisRelease(0, 0, js_max / 20) == 1) return true
 			break
@@ -73,15 +75,26 @@
 		case "accept":
 			if(keyfunc(config.key.accept) || joyfunc(0, config.joy.accept)) return true
 			break
+		case "leftPeek":
+			if(keyfunc(config.key.leftPeek) || joyfunc(0, config.joy.leftPeek)) return true
+			break
+		case "rightPeek":
+			if(keyfunc(config.key.rightPeek) || joyfunc(0, config.joy.rightPeek)) return true
+			break
+		case "downPeek":
+			if(keyfunc(config.key.downPeek) || joyfunc(0, config.joy.downPeek)) return true
+			break
+		case "upPeek":
+			if(keyfunc(config.key.upPeek) || joyfunc(0, config.joy.upPeek)) return true
+			break
 	}
 
 	return false
 }
 
-::rebindKeys <- function() {
+::rebindKeys <- function(newkey) {
 	resetDrawTarget()
 	local done = false
-	local keystep = 0
 
 	update()
 
@@ -89,82 +102,110 @@
 		drawBG()
 
 		local message = gvLangObj["controls-menu"]["press-key-for"] + " "
-		switch(keystep) {
+		switch(newkey) {
 			case 0:
 				message += gvLangObj["controls-menu"]["up"]
 				if(anyKeyPress() != -1) {
 					config.key.up = anyKeyPress()
-					keystep++
+					done = true
 				}
 				break
 			case 1:
 				message += gvLangObj["controls-menu"]["down"]
 				if(anyKeyPress() != -1) {
 					config.key.down = anyKeyPress()
-					keystep++
+					done = true
 				}
 				break
 			case 2:
 				message += gvLangObj["controls-menu"]["left"]
 				if(anyKeyPress() != -1) {
 					config.key.left = anyKeyPress()
-					keystep++
+					done = true
 				}
 				break
 			case 3:
 				message += gvLangObj["controls-menu"]["right"]
 				if(anyKeyPress() != -1) {
 					config.key.right = anyKeyPress()
-					keystep++
+					done = true
 				}
 				break
 			case 4:
 				message += gvLangObj["controls-menu"]["jump"]
 				if(anyKeyPress() != -1) {
 					config.key.jump = anyKeyPress()
-					keystep++
+					done = true
 				}
 				break
 			case 5:
 				message += gvLangObj["controls-menu"]["shoot"]
 				if(anyKeyPress() != -1) {
 					config.key.shoot = anyKeyPress()
-					keystep++
+					done = true
 				}
 				break
 			case 6:
 				message += gvLangObj["controls-menu"]["run"]
 				if(anyKeyPress() != -1) {
 					config.key.run = anyKeyPress()
-					keystep++
+					done = true
 				}
 				break
 			case 7:
 				message += gvLangObj["controls-menu"]["sneak"]
 				if(anyKeyPress() != -1) {
 					config.key.sneak = anyKeyPress()
-					keystep++
+					done = true
 				}
 				break
 			case 8:
 				message += gvLangObj["controls-menu"]["pause"]
 				if(anyKeyPress() != -1) {
 					config.key.pause = anyKeyPress()
-					keystep++
+					done = true
 				}
 				break
 			case 9:
 				message += gvLangObj["controls-menu"]["item-swap"]
 				if(anyKeyPress() != -1) {
 					config.key.swap = anyKeyPress()
-					keystep++
+					done = true
 				}
 				break
 			case 10:
 				message += gvLangObj["controls-menu"]["menu-accept"]
 				if(anyKeyPress() != -1) {
 					config.key.accept = anyKeyPress()
-					keystep++
+					done = true
+				}
+				break
+			case 11:
+				message += gvLangObj["controls-menu"]["cam-left-peek"]
+				if(anyKeyPress() != -1) {
+					config.key.leftPeek = anyKeyPress()
+					done = true
+				}
+				break
+			case 12:
+				message += gvLangObj["controls-menu"]["cam-right-peek"]
+				if(anyKeyPress() != -1) {
+					config.key.rightPeek = anyKeyPress()
+					done = true
+				}
+				break
+			case 13:
+				message += gvLangObj["controls-menu"]["cam-down-peek"]
+				if(anyKeyPress() != -1) {
+					config.key.downPeek = anyKeyPress()
+					done = true
+				}
+				break
+			case 14:
+				message += gvLangObj["controls-menu"]["cam-up-peek"]
+				if(anyKeyPress() != -1) {
+					config.key.upPeek = anyKeyPress()
+					done = true
 				}
 				break
 			default:
@@ -241,6 +282,34 @@
 				message += gvLangObj["controls-menu"]["menu-accept"]
 				if(anyJoyPress(0) != -1) {
 					config.joy.accept = anyJoyPress(0)
+					joystep++
+				}
+				break
+			case 11:
+				message += gvLangObj["controls-menu"]["cam-left-peek"]
+				if(anyJoyPress(0) != -1) {
+					config.joy.leftPeek = anyJoyPress(0)
+					joystep++
+				}
+				break
+			case 12:
+				message += gvLangObj["controls-menu"]["cam-right-peek"]
+				if(anyJoyPress(0) != -1) {
+					config.joy.rightPeek = anyJoyPress(0)
+					joystep++
+				}
+				break
+			case 13:
+				message += gvLangObj["controls-menu"]["cam-down-peek"]
+				if(anyJoyPress(0) != -1) {
+					config.joy.downPeek = anyJoyPress(0)
+					joystep++
+				}
+				break
+			case 14:
+				message += gvLangObj["controls-menu"]["cam-up-peek"]
+				if(anyJoyPress(0) != -1) {
+					config.joy.upPeek = anyJoyPress(0)
 					joystep++
 				}
 				break

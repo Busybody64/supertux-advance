@@ -9,7 +9,7 @@
 	{
 		base.constructor(_x, _y)
 		frame = randFloat(4)
-		game.maxcoins++
+		game.maxCoins++
 	}
 
 	function run()
@@ -19,6 +19,52 @@
 		if(gvPlayer) if(distance2(x, y, gvPlayer.x, gvPlayer.y + 2) <= 16) {
 			deleteActor(id)
 			newActor(CoinEffect, x, y)
+		}
+	}
+
+	function _typeof() { return "Coin" }
+}
+
+::Coin5 <- class extends Actor{
+	frame = 0.0
+
+	constructor(_x, _y, _arr = null)
+	{
+		base.constructor(_x, _y)
+		frame = randFloat(4)
+		game.maxCoins++
+	}
+
+	function run()
+	{
+		frame += 0.2
+		drawSprite(sprCoin5, frame, x - camx, y - camy)
+		if(gvPlayer) if(distance2(x, y, gvPlayer.x, gvPlayer.y + 2) <= 16) {
+			deleteActor(id)
+			newActor(CoinEffect, x, y, 5)
+		}
+	}
+
+	function _typeof() { return "Coin" }
+}
+
+::Coin10 <- class extends Actor{
+	frame = 0.0
+
+	constructor(_x, _y, _arr = null)
+	{
+		base.constructor(_x, _y)
+		frame = randFloat(4)
+		game.maxCoins++
+	}
+
+	function run()
+	{
+		frame += 0.2
+		drawSprite(sprCoin10, frame, x - camx, y - camy)
+		if(gvPlayer) if(distance2(x, y, gvPlayer.x, gvPlayer.y + 2) <= 16) {
+			deleteActor(id)
+			newActor(CoinEffect, x, y, 10)
 		}
 	}
 
@@ -59,11 +105,11 @@
 			deleteActor(id)
 			if(game.weapon == 0) {
 				game.weapon = 1
-				game.maxenergy = 4 - game.difficulty
+				game.maxEnergy = 4 - game.difficulty
 			}
 			else {
 				game.subitem = game.weapon
-				game.maxenergy = 4 - game.difficulty
+				game.maxEnergy = 4 - game.difficulty
 				game.weapon = 1
 			}
 			playSoundChannel(sndHeal, 0, 1)
@@ -88,11 +134,11 @@
 			deleteActor(id)
 			if(game.weapon == 0) {
 				game.weapon = 2
-				game.maxenergy = 4 - game.difficulty
+				game.maxEnergy = 4 - game.difficulty
 			}
 			else {
 				game.subitem = game.weapon
-				game.maxenergy = 4 - game.difficulty
+				game.maxEnergy = 4 - game.difficulty
 				game.weapon = 2
 			}
 			playSoundChannel(sndHeal, 0, 1)
@@ -292,7 +338,7 @@
 			if(gvPlayer.blinking > 0) return
 			if(gvPlayer.x < x) gvPlayer.hspeed = -1.0
 			else gvPlayer.hspeed = 1.0
-			gvPlayer.hurt = true
+			gvPlayer.hurt = 1
 			deleteActor(id)
 		}
 
@@ -369,7 +415,7 @@
 			if(game.weapon == 0) game.weapon = 3
 			else {
 				game.subitem = game.weapon
-				game.maxenergy = 1
+				game.maxEnergy = 1
 				game.weapon = 3
 			}
 			if(gvPlayer.rawin("tftime")) gvPlayer.tftime = 0
@@ -413,12 +459,12 @@
 		shape.setPos(x, y)
 
 		if(gvPlayer) if(distance2(x, y, gvPlayer.x, gvPlayer.y) <= 16) {
-			game.lives++
+			game.levelCoins += 50
 			playSound(snd1up, 0)
 			deleteActor(id)
 		}
 
-		drawSprite(getroottable()[game.characters[game.playerchar][1]], game.weapon, x - camx, y + 8 - camy)
+		drawSprite(getroottable()[game.characters[game.playerChar][1]], game.weapon, x - camx, y + 8 - camy)
 	}
 }
 
@@ -497,11 +543,11 @@
 			deleteActor(id)
 			if(game.weapon == 0) {
 				game.weapon = 4
-				game.maxenergy = 4 - game.difficulty
+				game.maxEnergy = 4 - game.difficulty
 			}
 			else {
 				game.subitem = game.weapon
-				game.maxenergy = 4 - game.difficulty
+				game.maxEnergy = 4 - game.difficulty
 				game.weapon = 4
 			}
 			playSoundChannel(sndHeal, 0, 1)
@@ -562,6 +608,7 @@
 		//Pickup
 		if(gvPlayer) if(distance2(x, y, gvPlayer.x, gvPlayer.y) <= 16) {
 			deleteActor(id)
+			game.health += 4
 			switch(color) {
 				case 0:
 					gvKeyCopper = true

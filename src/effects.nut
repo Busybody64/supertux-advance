@@ -43,6 +43,21 @@
 	}
 }
 
+::PoofTiny <- class extends Actor {
+	frame = 0.0
+	angle = 0
+
+	constructor(_x, _y, _arr = null) {
+		base.constructor(_x, _y)
+		angle = (360 / 8) * randInt(8)
+	}
+	function run() {
+		frame += 0.25
+		if(frame >= 4) deleteActor(id)
+		else drawSpriteExZ(4, sprPoof, floor(frame), x - camx, y - camy, 0, 0, 0.5, 0.5, 1)
+	}
+}
+
 ::Flame <- class extends Actor {
 	frame = 0.0
 	angle = 0
@@ -55,6 +70,7 @@
 		frame += 0.25
 		if(frame >= 8) deleteActor(id)
 		else drawSpriteEx(sprFlame, floor(frame), x - camx, y - camy, 0, 0, 1, 1, 1)
+		drawLightEx(sprLightFire, 0, x - camx, y - camy, 0, 0, 0.75 - (frame / 10.0), 0.75 - (frame / 10.0))
 	}
 }
 
@@ -88,31 +104,29 @@
 		frame += 0.25
 		if(frame >= 6) deleteActor(id)
 		else drawSpriteEx(sprFlameTiny, floor(frame), x - camx, y - camy, angle, 0, 1, 1, 1)
+		drawLightEx(sprLightFire, 0, x - camx, y - camy, 0, 0, (1.0 / 8.0) - frame, (1.0 / 8.0) - frame)
 	}
 }
 
 ::CoinEffect <- class extends Actor {
 	vspeed = -5.0
+	value = 1
 
 	constructor(_x, _y, _arr = null) {
+		if(_arr == 5) value = 5
+		else if(_arr == 10) value = 10
+		game.levelCoins += value
 		base.constructor(_x, _y)
-		game.levelcoins++
-		game.coins++
-		if(game.coins >= 100) {
-			playSoundChannel(snd1up, 0, 2)
-			game.lives++
-			game.coins = 0
-		}
-		else {
-			stopSound(sndCoin)
-			playSound(sndCoin, 0)
-		}
+		stopSound(sndCoin)
+		playSound(sndCoin, 0)
 	}
 
 	function run() {
 		vspeed += 0.5
 		y += vspeed
-		drawSpriteZ(4, sprCoin, getFrames() / 2, x - camx, y - camy)
+		if(value == 10) drawSpriteZ(4, sprCoin10, getFrames() / 2, x - camx, y - camy)
+		else if(value == 5) drawSpriteZ(4, sprCoin5, getFrames() / 2, x - camx, y - camy)
+		else drawSpriteZ(4, sprCoin, getFrames() / 2, x - camx, y - camy)
 		if(vspeed >= 3) {
 			deleteActor(id)
 			newActor(Spark, x, y)

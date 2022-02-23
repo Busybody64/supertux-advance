@@ -245,29 +245,93 @@
 		r = _arr[0].tointeger()
 		a = _arr[1].tofloat()
 		s = _arr[2].tofloat()
-		hb = []
-		if(r > 0) for(local i = 0; i < r; i++) {
-			hb.push(Cir(x, y, 2))
-		}
+		hb = (Cir(x, y, 6))
 	}
 
 	function run() {
 		//Rotate chain
+		//s = sin(getFrames() / 5.0) * 4.0 //Save for flamethrower animation
+		if(gvPlayer) if(distance2(x, y, gvPlayer.x, gvPlayer.y) > screenW() * 0.8) return
 		a += s
 
 		if(r > 0) for(local i = 0; i < r; i++) {
-			hb[i].setPos(x + (i * 8) * cos((2 * pi) + (a / 60.0 - i * s / 60.0)), y + (i * 8) * sin((2 * pi) + (a / 60.0 - i * s / 60.0)))
-			drawSprite(sprFireball, getFrames() / 4, hb[i].x - camx, hb[i].y - camy)
-			if(gvPlayer) if(hitTest(hb[i], gvPlayer.shape)) {
-				gvPlayer.hurt = true
+			hb.setPos(x + (i * 8) * cos((2 * pi) + (a / 60.0 - i * s / 45.0)), y + (i * 8) * sin((2 * pi) + (a / 60.0 - i * s / 45.0)))
+			drawSprite(sprFireball, getFrames() / 4, hb.x - camx, hb.y - camy)
+			drawLightEx(sprLightFire, 0, hb.x - camx, hb.y - camy, 0, 0, 1.0 / 8.0, 1.0 / 8.0)
+
+			if((i - 1) % 2 == 0) {
+				if(gvPlayer) if(hitTest(hb, gvPlayer.shape)) {
+					gvPlayer.hurt = 1
+				}
 			}
+
 			if(randInt(60) == 0) {
-				local c = actor[newActor(FlameTiny, hb[i].x, hb[i].y)]
+				local c = actor[newActor(FlameTiny, hb.x, hb.y)]
 				c.vspeed = -0.25
 				c.hspeed = randFloat(0.5) - 0.25
 			}
 		}
 
 		if(debug) drawText(font, x - camx, y - camy, wrap(a, 0, 360).tostring())
+	}
+}
+
+::PathCarrier <- class extends PathCrawler {
+	obj = null
+
+	constructor(_x, _y, _arr = null) {
+		base.constructor(_x, _y, _arr)
+
+		local newarr = []
+		if(_arr.len() > 3) for(local i = 3; i < _arr.len(); i++) newarr.push(_arr[i])
+		if(getroottable().rawin(_arr[2])) obj = newActor(getroottable()[_arr[2]], x, y, newarr)
+	}
+
+	function run() {
+		base.run()
+
+		if(checkActor(obj)) {
+			actor[obj].x = x
+			actor[obj].y = y
+		} else deleteActor(id)
+	}
+}
+
+::RingCarrier <- class extends Actor {
+	r = 0.0 //Radius
+	c = 0.0 //Count
+	s = 0.0 //Speed
+	a = 0.0 //Angle
+	l = null //List
+
+	constructor(_x, _y, _arr = null) {
+		x = _x
+		y = _y
+		base.constructor(_x, _y)
+		r = _arr[0].tofloat()
+		c = _arr[1].tointeger()
+		s = _arr[2].tofloat()
+
+		local newarr = []
+		if(_arr.len() > 4) for(local i = 4; i < _arr.len(); i++) newarr.push(_arr[i])
+		if(newarr.len() == 1) newarr = newarr[0]
+
+		l = []
+		for(local i = 0; i < c; i++) {
+			l.push(newActor(getroottable()[_arr[3]], x, y, newarr))
+		}
+	}
+
+	function run() {
+		local cl = c //Coins left
+		a += s / 60.0
+		for(local i = 0; i < c; i++) {
+			if(checkActor(l[i])) {
+				actor[l[i]].x = x + r * cos((i * 2 * pi / c) + a)
+				actor[l[i]].y = y + r * sin((i * 2 * pi / c) + a)
+			}
+			else cl--
+		}
+		if(cl == 0) deleteActor(id)
 	}
 }

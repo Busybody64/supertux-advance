@@ -16,9 +16,9 @@
 	startx = 0.0
 	starty = 0.0
 	firetime = 0
-	hurt = false
+	hurt = 0
 	swimming = false
-	endmode = false
+	endMode = false
 	canstomp = true //If they can use jumping as an attack
 	sprite = sprTux
 	invincible = 0
@@ -43,9 +43,11 @@
 	anHurt = [30.0, 31.0, "hurt"]
 	anJumpU = [32.0, 33.0, "jumpU"]
 	anJumpT = [34.0, 35.0, "jumpT"]
-	anFall = [36.0, 37.0, "fall"]
+	anFall = null
+	anFallN = [36.0, 37.0, "fall"]
 	anClimb = [44.0, 47.0, "climb"]
 	anWall = [48.0, 49.0, "wall"]
+	anFallW = [48.0, 48.0, "wall"]
 	anSwimF = [52.0, 55.0, "swim"]
 	anSwimUF = [56.0, 59.0, "swim"]
 	anSwimDF = [60.0, 63.0, "swim"]
@@ -64,7 +66,8 @@
 		if(!gvPlayer) gvPlayer = this
 		startx = _x.tofloat()
 		starty = _y.tofloat()
-		energy = game.maxenergy
+		energy = game.maxEnergy
+		anFall = anFallN
 	}
 
 	function run() {
@@ -90,15 +93,15 @@
 			firetime--
 		}
 
-		if(firetime == 0 && energy < game.maxenergy) {
+		if(firetime == 0 && energy < game.maxEnergy) {
 			energy++
 			firetime = 60
 		}
 
 
-		if(game.weapon == 0) game.maxenergy = 0
-		if(game.weapon == 3) game.maxenergy = 4
-		if(energy > game.maxenergy) energy = game.maxenergy
+		if(game.weapon == 0) game.maxEnergy = 0
+		if(game.weapon == 3) game.maxEnergy = 4
+		if(energy > game.maxEnergy) energy = game.maxEnergy
 
 		/////////////
 		// ON LAND //
@@ -213,6 +216,9 @@
 						anim = anJumpU
 						frame = anim[0]
 					}
+
+					if(!freeLeft) flip = 0
+					if(!freeRight) flip = 1
 					break
 
 				case anDive:
@@ -281,6 +287,7 @@
 					if(getcon("down", "hold") || !placeFree(x, y - 8)) anim = anCrawl
 					else anim = anWalk
 				}
+				if(getcon("jump", "press") || getcon("up", "press")) if(placeFree(x, y + 2) && placeFree(x, y - 2)) anim = anFall
 			}
 
 			if(anim != anClimb && anim != anWall) {
@@ -437,6 +444,28 @@
 						energy--
 					}
 				}
+
+				//Wall slide
+				if((anim == anFallN || anim == anFallW) && ((getcon("left", "hold") && !freeLeft) || (getcon("right", "hold") && !freeRight))) {
+					if(!freeLeft && !(onIce(x - 8, y) || onIce(x - 8, y - 16))) {
+						if(vspeed > 0.5) vspeed = 0.5
+						if(getFrames() / 4 % 4 == 0) newActor(PoofTiny, x - 4, y + 12)
+						anFall = anFallW
+						anim = anFallW
+						flip = 0
+					}
+					if(!freeRight && !(onIce(x + 8, y) || onIce(x + 8, y - 16))) {
+						if(vspeed > 0.5) vspeed = 0.5
+						if(getFrames() / 4 % 4 == 0) newActor(PoofTiny, x + 4, y + 12)
+						anFall = anFallW
+						anim = anFallW
+						flip = 1
+					}
+				} else {
+					anFall = anFallN
+					if(anim == anFallW) anim = anFallN
+				}
+
 				if(getcon("jump", "press") && jumpBuffer <= 0 && freeDown) jumpBuffer = 8
 				if(jumpBuffer > 0) jumpBuffer--
 
@@ -485,8 +514,8 @@
 					if(placeFree(x + 2, y + 1) || placeFree(x - 2, y + 1)) anim = anSlide
 				}
 			} else {
-				if(hspeed < 1 && endmode) hspeed += 0.2
-				if(endmode && placeFree(x + 2, y)) rspeed = hspeed
+				if(hspeed < 1 && endMode) hspeed += 0.2
+				if(endMode && placeFree(x + 2, y)) rspeed = hspeed
 				else rspeed = 0
 			}
 
@@ -824,11 +853,10 @@
 		else friction = 0.1
 
 		//Hurt
-		if(onHazard(x, y)) hurt = true
+		if(onHazard(x, y)) hurt = 1
 		if(onDeath(x, y)) game.health = 0
 
-		if(hurt && invincible == 0) {
-			hurt = false
+		if(hurt > 0 && invincible == 0) {
 			if(blinking == 0) {
 				blinking = 120
 				playSound(sndHurt, 0)
@@ -839,15 +867,16 @@
 					newActor(Spark, x, y)
 				}
 				else {
-					if(game.health > 0) game.health--
+					if(game.health > 0) game.health -= hurt
 					if(flip == 0) hspeed = -2.0
 					else hspeed = 2.0
 					anim = anHurt
 					frame = anim[0]
 				}
 			}
+			hurt = 0
 		}
-		else hurt = false
+		else hurt = 0
 		if(blinking > 0) blinking--
 		if(game.health == 0) {
 			die()
@@ -901,6 +930,8 @@
 			} else tftime = -1
 		}
 
+		drawLight(sprLightBasic, 0, x - camx, y - camy)
+
 		hidden = false
 
 		if(debug) drawText(font, x - camx - 8, y - 32 - camy, anim[2] + "\n" + frame.tostring())
@@ -948,8 +979,8 @@
 		local swap = game.subitem
 
 		if(game.weapon == game.subitem) {
-			if(game.maxenergy < 4 - game.difficulty) {
-				game.maxenergy++
+			if(game.maxEnergy < 4 - game.difficulty) {
+				game.maxEnergy++
 				game.subitem = 0
 				tftime = 0
 				playSound(sndHeal, 0)
@@ -999,16 +1030,11 @@
 ::TuxDie <- class extends Actor {
 	vspeed = -4.0
 	timer = 150
-	mywep = 0
 
 	constructor(_x, _y, _arr = null) {
 		base.constructor(_x, _y)
 		stopMusic()
 		playSound(sndDie, 0)
-		mywep = game.weapon
-		if(game.lives == 0 || game.check == false) game.weapon = 0
-		if(game.lives == 0) game.check = false
-		if(game.lives > 0) game.lives--
 	}
 
 	function run() {
@@ -1019,7 +1045,7 @@
 			startPlay(gvMap.file)
 			if(game.check == false) gvIGT = 0
 		}
-		switch(mywep) {
+		switch(game.weapon) {
 			case 0:
 				drawSprite(sprTux, wrap(getFrames() / 15, 50, 51), floor(x - camx), floor(y - camy))
 				break

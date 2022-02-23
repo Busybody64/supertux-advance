@@ -56,6 +56,8 @@
 ::sprC4 <- newSprite("res/gfx/c4.png", 16, 16, 0, 0, 0, 0)
 ::sprColorBlock <- newSprite("res/gfx/switchblocks.png", 16, 16, 0, 0, 0, 0)
 ::sprColorSwitch <- newSprite("res/gfx/colorswitches.png", 32, 32, 0, 0, 16, 16)
+::sprLockBlock <- newSprite("res/gfx/lock.png", 16, 16, 0, 0, 8, 8)
+::sprBossDoor <- newSprite("res/gfx/boss-door.png", 16, 32, 0, 0, 0, 0)
 
 //NPCs
 ::sprRadGuin <- newSprite("res/gfx/radguin.png", 22, 32, 0, 0, 16, 32)
@@ -100,6 +102,8 @@
 ::sprMuffin <- newSprite("res/gfx/muffin.png", 16, 16, 0, 0, 8, 8)
 ::sprStar <- newSprite("res/gfx/starnyan.png", 16, 16, 0, 0, 8, 8)
 ::sprCoin <- newSprite("res/gfx/coin.png", 16, 16, 0, 0, 8, 8)
+::sprCoin5 <- newSprite("res/gfx/5coin.png", 16, 16, 0, 0, 8, 8)
+::sprCoin10 <- newSprite("res/gfx/10coin.png", 16, 16, 0, 0, 8, 8)
 ::sprFlowerFire <- newSprite("res/gfx/fireflower.png", 16, 16, 0, 0, 8, 8)
 ::sprFlowerIce <- newSprite("res/gfx/iceflower.png", 16, 16, 0, 0, 8, 8)
 ::sprAirFeather <- newSprite("res/gfx/airfeather.png", 16, 16, 0, 0, 8, 8)
@@ -157,6 +161,14 @@
 //Weather
 ::weRain <- newSprite("res/gfx/rainfall.png", 64, 64, 0, 0, 0, 0)
 ::weSnow <- newSprite("res/gfx/snowfall.png", 64, 64, 0, 0, 0, 0)
+
+//Lights
+::sprLightBasic <- newSprite("res/gfx/light-player-basic.png", 48, 48, 0, 0, 24, 24)
+spriteSetBlendMode(sprLightBasic, bm_add)
+::sprLightFire <- newSprite("res/gfx/light-fire.png", 128, 128, 0, 0, 64, 64)
+spriteSetBlendMode(sprLightFire, bm_add)
+::sprLightIce <- newSprite("res/gfx/light-ice.png", 128, 128, 0, 0, 64, 64)
+spriteSetBlendMode(sprLightIce, bm_add)
 
 //Sounds
 ::sndFireball <- loadSound("res/snd/fireball.ogg")

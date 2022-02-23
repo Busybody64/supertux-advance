@@ -1,3 +1,17 @@
+/*===============================*\
+|                                 |
+|  BRUX JSON MAP LOADER           |
+|                                 |
+|  LICENSE: AGPL                  |
+|  AUTHOR: Kelvin Shadewing       |
+|  DESC: For use in Brux GDK      |
+|    games to load JSON maps.     |
+|                                 |
+\*===============================*/
+
+//TODO:
+//Some SuperTux Advance-specific code exists and should be ported to a separate file
+
 ////////////////
 // TILED MAPS //
 ////////////////
@@ -241,6 +255,48 @@
 								else drawSpriteEx(tileset[k], n - data.tilesets[k].firstgid, x + (j * data.tilewidth), y + (i * data.tileheight), 0, 0, 1, 1, data.layers[t].opacity * a)
 							}
 							else drawSpriteEx(tileset[k], n - data.tilesets[k].firstgid, x + (j * data.tilewidth), y + (i * data.tileheight), 0, 0, 1, 1, data.layers[t].opacity * a)
+							k = -1
+							break
+						}
+					}
+				}
+			}
+		}
+	}
+
+	function drawTilesMod(x, y, mx, my, mw, mh, l, a = 1, c = 0xffffffff) { //@mx through @mh are the rectangle of tiles that will be drawn
+		//Find layer
+		local t = -1; //Target layer
+		for(local i = 0; i < data.layers.len(); i++) {
+			if(data.layers[i].type == "tilelayer" && data.layers[i].name == l) {
+				t = i
+				break
+			}
+		}
+		if(t == -1) {
+			return; //Quit if no tile layer by that name was found
+		}
+
+		//Make sure values are in range
+		if(data.layers[t].width < mx + mw) mw = data.layers[t].width - mx
+		if(data.layers[t].height < my + mh) mh = data.layers[t].height - my
+		if(mx < 0) mx = 0
+		if(my < 0) my = 0
+		if(mx > data.layers[t].width) mx = data.layers[t].width
+		if(my > data.layers[t].height) my = data.layers[t].height
+
+		for(local i = my; i < my + mh; i++) {
+			for(local j = mx; j < mx + mw; j++) {
+				if(i * data.layers[t].width + j >= data.layers[t].data.len()) return
+				local n = data.layers[t].data[(i * data.layers[t].width) + j]; //Number value of the tile
+				if(n != 0) {
+					for(local k = data.tilesets.len() - 1; k >= 0; k--) {
+						if(n >= data.tilesets[k].firstgid) {
+							if(anim.rawin(n)) {
+								if(tileset[k] == anim[n].sprite) anim[n].draw(x + (j * data.tilewidth), y + (i * data.tileheight), data.layers[t].opacity * a)
+								else drawSpriteExMod(tileset[k], n - data.tilesets[k].firstgid, x + (j * data.tilewidth), y + (i * data.tileheight), 0, 0, 1, 1, data.layers[t].opacity * a, c)
+							}
+							else drawSpriteExMod(tileset[k], n - data.tilesets[k].firstgid, x + (j * data.tilewidth), y + (i * data.tileheight), 0, 0, 1, 1, data.layers[t].opacity * a, c)
 							k = -1
 							break
 						}
