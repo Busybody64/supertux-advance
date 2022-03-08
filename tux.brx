@@ -86,7 +86,7 @@ switch(reschoice) {
 }
 
 //Uncomment this function if you want to play at actual GBA resolution
-//setResolution(320, 240)
+//setResolution(240, 160)
 
 gvScreen = newTexture(screenW(), screenH())
 gvPlayScreen = newTexture(screenW(), screenH())
@@ -120,11 +120,11 @@ print("Launching SuperTux Advance v." + gvVersion + "...")
 startMain()
 menu = meMain
 config.playerChar = "Tux"
-//startPlay("res/map/mario0.json")
 
 update()
-while(!getQuit() && !gvQuit)
+while(!getQuit() && !gvQuit) //Entire game happens here
 {
+	if(keyPress(k_f11)) toggleFullscreen()
 	if(getcon("pause", "press") && levelEndRunner == 0 && gvGameMode != gmMain) togglePause()
 	gvGameMode()
 	if(keyPress(k_tick)) debugConsole()

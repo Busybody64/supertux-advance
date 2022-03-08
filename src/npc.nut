@@ -1,7 +1,7 @@
 ::NPC <- class extends Actor {
 	shape = 0
 	text = ""
-	useflip = false
+	useflip = 0
 	flip = 0
 	sprite = 0
 	sayfunc = null
@@ -18,7 +18,7 @@
 			local argv = split(_arr, ", ")
 
 			if(getroottable().rawin(argv[0])) sprite = getroottable()[argv[0]]
-			useflip = argv[1].tointeger()
+			useflip = argv[1].tofloat()
 
 			sayfunc = argv[2]
 			arr = []
@@ -33,15 +33,15 @@
 		if(gvPlayer && sayfunc != null) {
 			if(hitTest(shape, gvPlayer.shape) && getcon("up", "press") && this.rawin(sayfunc)) this[sayfunc]()
 
-			if(gvInfoBox == text) if(distance2(x, y, gvPlayer.x, gvPlayer.y) > 32) gvInfoBox = ""
+			if(gvInfoBox == text) if(!inDistance2(x, y, gvPlayer.x, gvPlayer.y, 32)) gvInfoBox = ""
 
-			if(distance2(x, y, gvPlayer.x, gvPlayer.y) <= 32) {
+			if(inDistance2(x, y, gvPlayer.x, gvPlayer.y, 32)) {
 				if(x > gvPlayer.x + 2) flip = 1
 				if(x < gvPlayer.x - 2) flip = 0
 			}
 		}
 
-		if(useflip) drawSpriteEx(sprite, 0, x - camx, y - camy, 0, flip, 1, 1, 1)
+		if(useflip) drawSpriteEx(sprite, getFrames() * useflip, x - camx, y - camy, 0, flip, 1, 1, 1)
 		else drawSpriteEx(sprite, flip, x - camx, y - camy, 0, 0, 1, 1, 1)
 	}
 

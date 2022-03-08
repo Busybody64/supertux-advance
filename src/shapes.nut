@@ -95,24 +95,36 @@
 										return true
 										break
 									case 1:
+										if (((a.x - a.w) - (b.x + b.w)) == 0)
+											return false
+									
 										//Get slope angle
 										local a0 = b.h / b.w
 										local a1 = ((a.y + a.h) - (b.y + b.h)) / ((a.x - a.w) - (b.x + b.w))
 										if(a1 > a0) return false
 										break
 									case 2:
+										if (((a.x + a.w) - (b.x - b.w)) == 0)
+											return false
+									
 										//Get slope angle
 										local a0 = b.h / -b.w
 										local a1 = ((a.y + a.h) - (b.y + b.h)) / ((a.x + a.w) - (b.x - b.w))
 										if(a1 < a0) return false
 										break
 									case 3:
+										if (((a.x - a.w) - (b.x + b.w)) == 0)
+											return false
+									
 										//Get slope angle
 										local a0 = -b.h / b.w
 										local a1 = ((a.y - a.h) - (b.y - b.h)) / ((a.x - a.w) - (b.x + b.w))
 										if(a1 < a0) return false
 										break
 									case 4:
+										if (((a.x + a.w) - (b.x - b.w)) == 0)
+											return false
+									
 										//Get slope angle
 										local a0 = -b.h / -b.w
 										local a1 = ((a.y - a.h) - (b.y - b.h)) / ((a.x + a.w) - (b.x - b.w))
@@ -131,6 +143,8 @@
 									case 1:
 									case 2:
 									case 3:
+										if (((a.x - a.w) - (b.x + b.w)) == 0)
+											return false
 										//Get slope angle
 										local a0 = b.h / b.w
 										local a1 = ((a.y + a.h) - (b.y + b.h)) / ((a.x - a.w) - (b.x + b.w))
@@ -228,7 +242,7 @@
 					if(b.y > a.y + a.h) hy = a.y + a.h
 
 					//Check distance
-					if(distance2(hx, hy, b.x, b.y) <= b.r) return true
+					if(inDistance2(hx, hy, b.x, b.y, b.r)) return true
 					break
 					//Still need to check for collisions with slopes and liquid
 
@@ -252,7 +266,7 @@
 					if(a.y > b.y + b.h) hy = b.y + b.h
 
 					//Check distance
-					if(distance2(a.x, a.y, hx, hy) <= a.r) return true
+					if(inDistance2(a.x, a.y, hx, hy, a.r)) return true
 					break
 					//Still need to check for collisions with slopes and liquid
 

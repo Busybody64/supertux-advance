@@ -1,13 +1,17 @@
 //asset stuffs
 print("Loading Frostlands")
 
-::bgAuroraALT <- newSprite("contrib/frostlands/gfx/aurora-alt.png", 720, 240, 0, 0, 0, 0)
-::bgSnowPlainALT <- newSprite("contrib/frostlands/gfx/bgSnowPlain-alt.png", 720, 240, 0, 0, 0, 0)
+::bgAuroraALT <- newSprite("contrib/frostlands/gfx/BG/aurora-alt.png", 720, 240, 0, 0, 0, 0)
+::bgSnowPlainALT <- newSprite("contrib/frostlands/gfx/BG/bgSnowPlain-alt.png", 720, 240, 0, 0, 0, 0)
 
 ::sprFireBlock <- newSprite("res/gfx/Fireblock.png", 16, 16, 0, 0, 0, 0)
 
-::sprmark <- newSprite("contrib/frostlands/gfx/mark.png", 67, 48, 0, 0, 32, 47)
-::sprmarq <- newSprite("contrib/frostlands/gfx/marqies.png", 34, 40, 0, 0, 32, 40)
+//NPCS
+::sprTinyFireGuinb <- newSprite("contrib/frostlands/gfx/NPC/tinyfireguinb.png", 13, 23, 0, 0, 6, 23)
+::sprRKO <- newSprite("contrib/frostlands/gfx/NPC/Frost.png", 18, 46, 0, 0, 9, 46)
+::sprmark <- newSprite("contrib/frostlands/gfx/NPC/mark.png", 67, 48, 0, 0, 32, 47)
+::sprmarq <- newSprite("contrib/frostlands/gfx/NPC/marqies.png", 34, 40, 0, 0, 32, 40)
+::sprTuckles2 <- newSprite("contrib/frostlands/gfx/NPC/tuckles2.png", 18, 34, 0, 0, 8, 34)
 //background shiz
 
 ::dbgAuroraF <- function() {
@@ -32,7 +36,7 @@ print("Loading Frostlands")
 
 		shape = Rec(x, y + 2, 8, 8, 0)
 		slideshape = Rec(x, y - 1, 12, 8, 0)
-		fireshape = Rec(x, y, 12, 12, 0)
+		fireshape = Rec(x, y, 16, 16, 0)
 		tileSetSolid(x, y, 1)
 	}
 

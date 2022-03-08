@@ -8,6 +8,8 @@
 
 [FrostC](https://www.youtube.com/channel/UCy9RpAf9M8icNBRXf3S6rmw) - Jumpy, Darknyan, Livewire, Blazeborn
 
+[dtsudo](https://github.com/dtsudo) - Bug fixes
+
 ## Graphics
 
 [Kelvin Shadewing](http://kelvinshadewing.net) - Tux, Cannon Bob, Igloo edits, Mama Bear, pipe tiles, pipe snake, muffin, deathcap, star nyan, heart, fonts, item blocks, debug graphics, elemental explosions
@@ -98,9 +100,11 @@ Lukas Nystrand - Chippdisko
 
 [Alex McCulloch](https://opengameart.org/users/pro-sensory) - Halloween
 
+[migfus20](https://opengameart.org/users/migfus20) - Boss Theme
+
 ## Level Contributors
 
-[FrostC](https://www.youtube.com/channel/UCy9RpAf9M8icNBRXf3S6rmw) - Slip and Slide, Tux 'N Trouble, Frost's Sense of Snow, The Ocean Bridge, Arctic Wind
+[FrostC](https://www.youtube.com/channel/UCy9RpAf9M8icNBRXf3S6rmw) - Slip and Slide, Tux 'N Trouble, Frost's Sense of Snow, The Ocean Bridge, Arctic Wind, Gaurded steps, part of Branching path
 
 ## Translators
 

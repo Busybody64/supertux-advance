@@ -7,6 +7,8 @@
 ::font <- newFont(sprFont, 0, 0, true, 0)
 ::sprFont2 <- newSprite("res/gfx/font2.png", 12, 14, 0, 0, 0, 0)
 ::font2 <- newFont(sprFont2, 33, 0, true, -4)
+::sprFontC <- newSprite("res/gfx/font-cyan.png", 6, 8, 0, 0, 0, 0)
+::fontC <- newFont(sprFontC, 0, 0, true, 0)
 ::sprDebug <- newSprite("res/gfx/debugkeys.png", 8, 8, 0, 0, 0, 0)
 ::sprTitle <- newSprite("res/gfx/title.png", 220, 55, 0, 0, 110, 0)
 
@@ -71,6 +73,7 @@
 ::sprSam <- newSprite("res/gfx/sam.png", 12, 32, 0, 0, 6, 32)
 ::sprTuckles <- newSprite("res/gfx/tuckles.png", 18, 34, 0, 0, 8, 34)
 ::sprGaruda <- newSprite("res/gfx/garuda.png", 35, 36, 0, 0, 17, 36)
+::sprKelvinNPC <- newSprite("res/gfx/npc-kelvin.png", 32, 32, 0, 0, 16, 32)
 
 //Enemies
 ::sprSnake <- newSprite("res/gfx/snake.png", 16, 32, 0, 0, 8, 0)
@@ -114,6 +117,7 @@
 ::sprKeySilver <- newSprite("res/gfx/key-silver.png", 16, 16, 0, 0, 8, 8)
 ::sprKeyGold <- newSprite("res/gfx/key-gold.png", 16, 16, 0, 0, 8, 8)
 ::sprKeyMythril <- newSprite("res/gfx/key-mythril.png", 16, 16, 0, 0, 8, 8)
+::sprSpecialBall <- newSprite("res/gfx/specialbubble.png", 16, 16, 0, 0, 8, 8)
 
 //Effects
 ::sprSpark <- newSprite("res/gfx/spark.png", 12, 16, 0, 0, 6, 8)

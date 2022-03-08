@@ -72,6 +72,8 @@
 		starty = _y.tofloat()
 		energy = game.maxEnergy
 		anFall = anFallN
+		xprev = x
+		yprev = y
 	}
 
 	function run() {
@@ -322,11 +324,11 @@
 				if(game.weapon == 3 && energy < 1) energy += 0.02
 			}
 			if(canMove) {
-				if((getcon("run", "hold") || (abs(joyX(0)) >= js_max * 0.9 || abs(joyY(0)) >= js_max * 0.9)) && anim != anCrawl) {
+				if(getcon("sneak", "hold") || (abs(joyX(0)) <= js_max * 0.4 && abs(joyX(0)) > js_max * 0.1) || (abs(joyY(0)) <= js_max * 0.4 && abs(joyY(0)) > js_max * 0.1) && config.stickspeed || anim == anCrawl) mspeed = 1.0
+				else if((getcon("run", "hold") || (abs(joyX(0)) >= js_max * 0.9 || abs(joyY(0)) >= js_max * 0.9) && config.stickspeed) && anim != anCrawl) {
 					if(game.weapon == 2) mspeed = 3.5
 					else mspeed = 3.0
 				}
-				else if(getcon("sneak", "hold") || (abs(joyX(0)) <= js_max * 0.4 && abs(joyX(0)) > js_max * 0.1) || (abs(joyY(0)) <= js_max * 0.4 && abs(joyY(0)) > js_max * 0.1) || anim == anCrawl) mspeed = 1.0
 				else mspeed = 2.0
 				if(nowInWater) mspeed *= 0.8
 				if(anim == anStomp) mspeed = 0.5
@@ -699,6 +701,8 @@
 				vspeed /= 2.0
 				newActor(Splash, x, y)
 			}
+			anFall = anFallN
+			if(anim == anFallW) anim = anFallN
 
 			//Animation states
 			switch(anim) {
@@ -735,11 +739,11 @@
 
 			//Movement
 			if(canMove) {
-				if(getcon("run", "hold") || (abs(joyX(0)) >= js_max * 0.9 || abs(joyY(0)) >= js_max * 0.9)) {
+				if(getcon("sneak", "hold") || (abs(joyX(0)) <= js_max * 0.4 && abs(joyX(0)) > js_max * 0.1) || (abs(joyY(0)) <= js_max * 0.4 && abs(joyY(0)) > js_max * 0.1) && config.stickspeed) mspeed = 0.5
+				else if(getcon("run", "hold") || (abs(joyX(0)) >= js_max * 0.9 || abs(joyY(0)) >= js_max * 0.9) && config.stickspeed) {
 					if(game.weapon == 2) mspeed = 2.2
 					else mspeed = 2.0
 				}
-				else if(getcon("sneak", "hold") || (abs(joyX(0)) <= js_max * 0.4 && abs(joyX(0)) > js_max * 0.1) || (abs(joyY(0)) <= js_max * 0.4 && abs(joyY(0)) > js_max * 0.1)) mspeed = 0.5
 				else mspeed = 1.0
 
 				if(getcon("right", "hold") && hspeed < mspeed && anim != anWall && anim != anSlide && anim != anHurt) hspeed += 0.1
@@ -838,6 +842,8 @@
 
 		//Base movement
 		shape.setPos(x, y)
+		xprev = x
+		yprev = y
 
 		if(placeFree(x, y + vspeed)) y += vspeed
 		else {
@@ -971,6 +977,8 @@
 				tftime += 0.25
 			} else tftime = -1
 		}
+
+		drawLight(sprLightBasic, 0, x - camx, y - camy)
 
 		hidden = false
 

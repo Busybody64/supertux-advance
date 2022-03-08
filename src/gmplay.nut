@@ -22,12 +22,12 @@
 	game.enemies = 0
 	gvInfoBox = ""
 	gvLastSong = ""
-	autocon = {
-		up = false
-		down = false
-		left = false
-		right = false
-	}
+
+	//Reset auto/locked controls
+	autocon.up = false
+	autocon.down = false
+	autocon.left = false
+	autocon.right = false
 
 	//Reset keys
 	if(!game.check) {
@@ -420,6 +420,10 @@
 					c = newActor(EvilBlock, i.x + 8, i.y - 8)
 					break
 
+				case 77:
+					c = newActor(SpecialBall, i.x + 8, i.y - 8, i.name.tointeger())
+					break
+
 				case 78:
 					c = newActor(Berry, i.x + 8, i.y - 8)
 					break
@@ -487,12 +491,6 @@
 	//in the log if the map fails, so users can check why a level
 	//refuses to run.
 
-	//Reset auto/locked controls
-	autocon.up = false
-	autocon.down = false
-	autocon.left = false
-	autocon.right = false
-
 	//Execute level code
 	print("Running level code...")
 	if(gvMap.data.rawin("properties")) foreach(i in gvMap.data.properties) {
@@ -515,8 +513,8 @@
 	local lx = 0
 	local ly = 0
 	if(gvPlayer) {
-		lx = ((joyZ(0) / js_max.tofloat()) * screenW() / 2.5)
-		ly = ((joyH(0) / js_max.tofloat()) * screenH() / 2.5)
+		lx = ((joyH(0) / js_max.tofloat()) * screenW() / 2.5)
+		ly = ((joyV(0) / js_max.tofloat()) * screenH() / 2.5)
 
 		if(getcon("leftPeek", "hold")) lx = -(screenW() / 2.5)
 		if(getcon("rightPeek", "hold")) lx = (screenW() / 2.5)
@@ -528,8 +526,14 @@
 	{
 		if(gvPlayer) {
 			if(gvCamTarget == gvPlayer) {
-				px = (gvCamTarget.x + gvPlayer.hspeed * 32) - (screenW() / 2) + lx
-				py = (gvCamTarget.y + gvPlayer.vspeed * 16) - (screenH() / 2) + ly
+				if(debug && mouseDown(0)) {
+					px = (gvCamTarget.x) - (screenW() / 2) + lx
+					py = (gvCamTarget.y) - (screenH() / 2) + ly
+				}
+				else {
+					px = (gvCamTarget.x + (gvPlayer.x - gvPlayer.xprev) * 32) - (screenW() / 2) + lx
+					py = (gvCamTarget.y + (gvPlayer.y - gvPlayer.yprev) * 16) - (screenH() / 2) + ly
+				}
 			}
 			else {
 				local pw = max(screenW(), 320)
@@ -537,8 +541,14 @@
 				local ptx = (gvCamTarget.x) - (screenW() / 2)
 				local pty = (gvCamTarget.y) - (screenH() / 2)
 
-				if(gvCamTarget.rawin("w")) if(abs(gvCamTarget.w) > pw / 2) ptx = (gvPlayer.x + gvPlayer.hspeed * 32) - (screenW() / 2) + lx
-				if(gvCamTarget.rawin("h")) if(abs(gvCamTarget.h) > ph / 2) pty = (gvPlayer.y + gvPlayer.vspeed * 16) - (screenH() / 2) + ly
+				if(gvCamTarget.rawin("w")) if(abs(gvCamTarget.w) > pw / 2) {
+					if(debug && mouseDown(0)) ptx = gvPlayer.x - (screenW() / 2) + lx
+					else ptx = (gvPlayer.x + gvPlayer.hspeed * 32) - (screenW() / 2) + lx
+				}
+				if(gvCamTarget.rawin("h")) if(abs(gvCamTarget.h) > ph / 2) {
+					if(debug && mouseDown(0)) pty = gvPlayer.y - (screenH() / 2) + ly
+					else pty = (gvPlayer.y + gvPlayer.vspeed * 16) - (screenH() / 2) + ly
+				}
 
 				px = ptx
 				py = pty
@@ -573,8 +583,8 @@
 	camxprev = camx
 	camyprev = camy
 
-	gvMap.drawTiles(floor(-camx), floor(-camy), floor(camx / 16) - 3, floor(camy / 16), 24, 24, "bg")
-	gvMap.drawTiles(floor(-camx), floor(-camy), floor(camx / 16) - 3, floor(camy / 16), 24, 24, "mg")
+	gvMap.drawTiles(floor(-camx), floor(-camy), floor(camx / 16) - 3, floor(camy / 16), (screenW() / 16) + 5, (screenH() / 16) + 2, "bg")
+	gvMap.drawTiles(floor(-camx), floor(-camy), floor(camx / 16) - 3, floor(camy / 16), (screenW() / 16) + 5, (screenH() / 16) + 2, "mg")
 	if(gvMap.name != "shop") for(local i = 0; i < screenW() / 16; i++) {
 		drawSprite(sprVoid, 0, 0 + (i * 16), gvMap.h - 32 - camy)
 	}
@@ -582,10 +592,10 @@
 	drawZList(8)
 	if(actor.rawin("Water")) foreach(i in actor["Water"]) { i.draw() }
 	drawAmbientLight()
-	if(config.light) gvMap.drawTilesMod(floor(-camx), floor(-camy), floor(camx / 16) - 3, floor(camy / 16), 24, 20, "fg", 1, gvLight)
-	else gvMap.drawTiles(floor(-camx), floor(-camy), floor(camx / 16) - 3, floor(camy / 16), 24, 20, "fg")
+	if(config.light) gvMap.drawTilesMod(floor(-camx), floor(-camy), floor(camx / 16) - 3, floor(camy / 16), (screenW() / 16) + 5, (screenH() / 16) + 2, "fg", 1, gvLight)
+	else gvMap.drawTiles(floor(-camx), floor(-camy), floor(camx / 16) - 3, floor(camy / 16), (screenW() / 16) + 5, (screenH() / 16) + 2, "fg")
 	if(actor.rawin("SecretWall")) foreach(i in actor["SecretWall"]) { i.draw() }
-	if(debug) gvMap.drawTiles(floor(-camx), floor(-camy), floor(camx / 16), floor(camy / 16), 21, 17, "solid")
+	if(debug) gvMap.drawTiles(floor(-camx), floor(-camy), floor(camx / 16), floor(camy / 16), (screenW() / 16) + 5, (screenH() / 16) + 2, "solid")
 
 	//HUDs
 	setDrawTarget(gvScreen)
@@ -612,11 +622,10 @@
 			}
 		}
 
-		//Draw coins and lives
+		//Draw coins
 		drawSprite(sprCoin, 0, 16, screenH() - 16)
 		if(game.maxCoins > 0) drawText(font2, 24, screenH() - 23, game.levelCoins.tostring() + "/" + game.maxCoins.tostring())
 		else drawText(font2, 24, screenH() - 23, game.coins.tostring())
-		drawSprite(getroottable()[game.characters[game.playerChar][1]], game.weapon, screenW() - 16, screenH() - 12)
 
 		//Draw subitem
 		drawSprite(sprSubItem, 0, screenW() - 18, 18)
@@ -663,10 +672,24 @@
 		}
 
 		//Keys
-		if(gvKeyCopper) drawSprite(sprKeyCopper, 0, screenW() - 32, screenH() - 16)
-		if(gvKeySilver) drawSprite(sprKeySilver, 0, screenW() - 46, screenH() - 16)
-		if(gvKeyGold) drawSprite(sprKeyGold, 0, screenW() - 60, screenH() - 16)
-		if(gvKeyMythril) drawSprite(sprKeyMythril, 0, screenW() - 74, screenH() - 16)
+		local kx = 10
+		if(gvKeyCopper) {
+			drawSprite(sprKeyCopper, 0, screenW() - kx, screenH() - 16)
+			kx += 16
+		}
+		if(gvKeySilver) {
+			drawSprite(sprKeySilver, 0, screenW() - kx, screenH() - 16)
+			kx += 16
+		}
+		if(gvKeyGold) {
+			drawSprite(sprKeyGold, 0, screenW() - kx, screenH() - 16)
+			kx += 16
+		}
+		if(gvKeyMythril) {
+			drawSprite(sprKeyMythril, 0, screenW() - kx, screenH() - 16)
+			kx += 16
+		}
+		//Other items could be put in the row like this as well
 	}
 	else {
 		local ln = 3

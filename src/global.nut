@@ -2,7 +2,7 @@
 | GLOBAL VARIABLES |
 \*================*/
 
-::gvVersion <- "0.0.5 Nightly"
+::gvVersion <- "0.0.11 Nightly"
 ::gvMap <- 0
 ::gvGameMode <- 0
 ::gvQuit <- false
@@ -41,6 +41,16 @@
 		Tux = ["sprTuxOverworld", "sprTuxDoll", "sprTux", [40, 41]]
 		//Konqi = ["sprKonqiOverworld", "sprKonqiDoll", "sprKonqi", [8, 9]]
 	}
+	secretOrbs = [
+		false,
+		false,
+		false,
+		false,
+		false,
+		false,
+		false,
+		false
+	]
 	friends = {} //List of rescued friend characters
 	playerChar = "Tux" //Current player character
 	world = "res/map/overworld-0.json"
@@ -81,7 +91,7 @@
 		rightPeek = k_end
 		downPeek = k_pagedown
 		upPeek = k_pageup
-	},
+	}
 	joy = {
 		jump = 0
 		shoot = 2
@@ -95,6 +105,8 @@
 		downPeek = -1
 		upPeek = -1
 	}
+	autorun = false
+	stickspeed = true
 	playerChar = 0
 	lang = "en"
 	showleveligt = false
